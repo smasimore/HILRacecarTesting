@@ -11,6 +11,10 @@
 
 #include <stdint.h>
 
+
+// STRUCTS
+
+
 /**
  * Sensor type used to map environment values (e.g. 10 cm away from wall) to
  * voltage the sensor should output to the car.
@@ -21,23 +25,9 @@ enum sensor_type {
 
 struct sensor {
 	enum sensor_type type;
-	uint8_t pwmNum;  // All sensors are on the same port.
-};
-
-/**
- * Actuator type used to map voltage input from racecar to environment values 
- * (e.g. 5 cm/s).
- */
-enum actuator_type {
-	A_TEST,
-};
-
-/** 
- * All actuators on same port.
- */
-struct actuator {
-	enum actuator_type type;
-	uint8_t adcChannel;
+	uint8_t pwmNum;
+	uint16_t dir;
+	uint32_t val;
 };
 
 /**
@@ -76,5 +66,26 @@ struct environment {
 	uint8_t numWalls;
 	struct wall * walls;
 };
+
+
+// FUNCTIONS
+
+/**
+ * Based on velocity, direction, and sim_freq update car's position.
+ */
+void Simulator_MoveCar(struct car * car, uint32_t simFreq);
+
+/**
+ * Based on previous and next location, determine if hit wall.
+ */
+uint8_t Simulator_HitWall(uint32_t prevX, uint32_t prevY, 
+													uint32_t nextX, uint32_t nextY);
+
+/**
+ * Update sensor values relative to environment. For each sensor, based on 
+ * sensor's direction, car's direction, and car's position determine distance
+ * to closest wall.
+ */
+void Simulator_UpdateSensors(struct car * car);
 
 #endif // SIMULATOR_H

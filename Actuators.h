@@ -9,6 +9,11 @@
 #include "Simulator.h"
 
 /**
- * Init ports and relevant pins.
+ * Init ports and relevant pins for velocity and direction actuators.
  */
-void Actuators_Init(struct car car);
+void Actuators_Init(struct car * car);
+
+/**
+ * Gets input voltage values, maps to environment values, and stores in Car.
+ */
+void Actuators_UpdateVelocityAndDirection(struct car * car);

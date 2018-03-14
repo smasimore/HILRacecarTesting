@@ -12,36 +12,114 @@
 #include "Simulator.h"
 #include "Sensors.h"
 #include "Actuators.h"
+#include "UART.h"
+#include "SimLogger.h"
+
+#define SIM_FREQ 10 // Hz
+#define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
 
 #define NUM_SENSORS 2
-#define NUM_ACTUATORS 2
 #define NUM_WALLS 2
 
 struct car Car;
 struct environment Environment;
 struct sensor Sensors[NUM_SENSORS];
-struct actuator Actuators[NUM_ACTUATORS];
 struct wall Walls[NUM_WALLS];
 
 void initObjects(void);
+void initSystick(void);
+void endSim(void);
+
+uint32_t NumTicks = 0;
+uint8_t SimComplete = 0;
 
 int main(void){
 	// Inits
 	PLL_Init(Bus80MHz);
 	initObjects();
-	Sensors_Init(Car);
-	Actuators_Init(Car);
-	// SimRunLogger_Init --> inits uart
+	Sensors_Init(&Car);
+	Actuators_Init(&Car);
+	UART_Init();
 	
-	// Starts timer.
-	//startSimulation();
-	// SimRunLogger_PrintToUART
+	// Print initial message
+	UART_OutString("Beginning test... \r\n");
+	
+	// Starts simulation
+	initSystick();
 
-  return 0;
+	while (!SimComplete) {}
+
+	SimLogger_PrintToUART();
+	
+	// Give UART time to finish emptying FIFO. Otherwise exits before
+	// finishes printing.
+  while (1) {}
 }
 
-/*
- * Current init state:
+/**
+ * Used to create discrete events for sim. Every time ST interrupt is triggered
+ * the sim collects actuator value, updates car's position in environment, and
+ * produces next set of sensor values.
+ */
+void initSystick(void) {
+	NVIC_ST_CTRL_R = 0;
+	NVIC_ST_RELOAD_R = 80000000 / SIM_FREQ; // Clock freq (80MHz) / sim freq
+	NVIC_ST_CURRENT_R = 0;
+	NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x1FFFFFFF);	// Priority 0
+	NVIC_ST_CTRL_R = 7;
+}
+
+/**
+ * 1) Updates actuator values. 
+ * 2) Logs actuator values (set this st), sensor values (set last st), and car
+ *		state (set last st). This is done so that the car state that caused the
+ *		sensor and actuator values is logged.
+ * 3) Update car state using new actuator values.
+ * 4) Update sensor values.
+ * 5) Increment NumTicks.
+ */
+void SysTick_Handler(void) {
+	// Store car's previous x,y to later check if hit a wall.
+	uint32_t prevX = Car.x;
+	uint32_t prevY = Car.y;
+	
+	// Update actuator values (velocity and direction) and log.
+	Actuators_UpdateVelocityAndDirection(&Car);
+	SimLogger_LogRow(&Car, NumTicks);
+		
+	// Update car position based on current position, velocity, and direction.
+	Simulator_MoveCar(&Car, SIM_FREQ);
+	
+	// Check if hit wall
+	if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
+		UART_OutString("Car crashed into wall!\r\n");
+		endSim();
+	}
+	
+	// Update sensor vals and update voltages being outputted to car.
+	Simulator_UpdateSensors(&Car);
+	Sensors_UpdateVoltages(&Car);
+	
+	NumTicks++;
+	
+	if (NumTicks == MAX_NUM_TICKS) {
+		UART_OutString("Sim hit max num ticks: ");
+		UART_OutUDec(NumTicks);
+		UART_OutString("\r\n");
+		endSim();
+	}
+}
+
+/**
+ * Disable systick and set SimComplete.
+ */
+void endSim(void) {
+	NVIC_ST_CTRL_R = 0;
+	SimComplete = 1;	
+}
+
+/**
+ * Init state:
  *        _______ <-- finish line
  *       |       |
  *       |       |
@@ -51,8 +129,11 @@ int main(void){
  *       |       |
  *       |   C   |
  *        -------
+ *
+ * C.v = 0, V.dir = 90
+ * 
  */
-void initObjects(void) {
+void initObjects(void) { // initObjectsSimple
 	Walls[0].startX = 1000;
 	Walls[0].startY = 0;
 	Walls[0].endX = 1000;
@@ -73,16 +154,8 @@ void initObjects(void) {
 	Sensors[1].type = S_TEST;
 	Sensors[1].pwmNum = 1;
 
-	Actuators[0].type = A_TEST;
-	Actuators[0].adcChannel = 0;
-
-	Actuators[1].type = A_TEST;
-	Actuators[1].adcChannel = 1;
-
 	Car.numSensors = NUM_SENSORS;
-	Car.numActuators = NUM_ACTUATORS;
 	Car.sensors = Sensors;
-	Car.actuators = Actuators;
 
 	// Start car in the middle of the two walls, no velocity, facing north.
 	Car.x = 2000;
