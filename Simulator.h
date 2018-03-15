@@ -25,7 +25,6 @@ enum sensor_type {
 
 struct sensor {
 	enum sensor_type type;
-	uint8_t pwmNum;
 	uint16_t dir;
 	uint32_t val;
 };
@@ -46,9 +45,7 @@ struct car {
 	
 	// Sensors and actuators.
 	uint8_t numSensors;
-	uint8_t numActuators;
 	struct sensor * sensors;
-	struct actuator * actuators;	
 };
 
 /** 

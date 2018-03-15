@@ -18,7 +18,7 @@
 #define SIM_FREQ 10 // Hz
 #define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
 
-#define NUM_SENSORS 2
+#define NUM_SENSORS 6
 #define NUM_WALLS 2
 
 struct car Car;
@@ -38,8 +38,12 @@ int main(void){
 	PLL_Init(Bus80MHz);
 	initObjects();
 	Sensors_Init(&Car);
-	Actuators_Init(&Car);
+	Actuators_Init();
 	UART_Init();
+	
+	// Set sensors to initial state.
+	Simulator_UpdateSensors(&Car);
+	Sensors_UpdateVoltages(&Car);
 	
 	// Print initial message
 	UART_OutString("Beginning test... \r\n");
@@ -134,6 +138,8 @@ void endSim(void) {
  * 
  */
 void initObjects(void) { // initObjectsSimple
+	int i;
+	
 	Walls[0].startX = 1000;
 	Walls[0].startY = 0;
 	Walls[0].endX = 1000;
@@ -148,12 +154,12 @@ void initObjects(void) { // initObjectsSimple
 	Environment.walls = Walls;	
 	Environment.finishLineY = 5000;	
 	
-	Sensors[0].type = S_TEST;
-	Sensors[0].pwmNum = 0;
-
-	Sensors[1].type = S_TEST;
-	Sensors[1].pwmNum = 1;
-
+	for (i = 0; i < NUM_SENSORS; i++) {
+		Sensors[i].type = S_TEST;
+		Sensors[i].val = 0;
+		Sensors[i].dir = 0;
+	}
+	
 	Car.numSensors = NUM_SENSORS;
 	Car.sensors = Sensors;
 

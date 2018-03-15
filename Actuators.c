@@ -4,6 +4,7 @@
  * Last Updated Date: 03/14/2018
  * Description: Manages init'ing actuator ports and pins, mapping input voltage
  *							to environment variables (i.e. new velocity, direction of car).
+ *							Uses PE0 --> AIN3 (velocity) and PE1 --> AIN2 (direction).
  */
 
 #include "Simulator.h"
@@ -12,7 +13,7 @@
 /**
  * Init ports and relevant pins for velocity and direction actuators.
  */
-void Actuators_Init(struct car * car) {
+void Actuators_Init(void) {
 	 // Init adc and channels (?)
 }
 
