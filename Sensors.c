@@ -9,7 +9,7 @@
 #include "Simulator.h"
 #include "Sensors.h"
 #include "tm4c123gh6pm.h"
-#include "UART.h"
+#include "terminal.h"
 
 #define NUM_PWM_CHANNELS 6
 #define PWM_PERIOD 8000 // 1000 Hz
@@ -40,7 +40,7 @@ void Sensors_Init(struct car * car) {
 				initPWMChannel(sensor);
 				break;
 			default:
-				UART_OutString("Error: Unsupported sensor type\r\n");
+				terminal_printString("Error: Unsupported sensor type\r\n");
 				continue;
 		}
 	}
@@ -67,7 +67,7 @@ void initPWMChannel(struct sensor * sensor) {
 	static uint8_t nextPWMChannel = 0;
 	
 	if (nextPWMChannel == NUM_PWM_CHANNELS) {
-		UART_OutString("Error: Unsupported number of PWM channels\r\n");
+		terminal_printString("Error: Unsupported number of PWM channels\r\n");
 		return;
 	}
 
@@ -209,7 +209,7 @@ void initPWMChannel(struct sensor * sensor) {
 			break;
 		
 		default:
-			UART_OutString("Error: Unsupported number of PWM channels\r\n");
+			terminal_printString("Error: Unsupported number of PWM channels\r\n");
 			return;
 	}
 	
@@ -243,7 +243,7 @@ void Sensors_UpdateOutput(struct car * car) {
 				// todo
 				break;
 			default:
-				UART_OutString("Error: Unsupported sensor type\r\n");
+				terminal_printString("Error: Unsupported sensor type\r\n");
 				continue;	
 		}
 	}
@@ -265,12 +265,12 @@ void setPWMChannelDuty(uint8_t channel, uint16_t duty) {
 	uint32_t duty_ticks;
 	
 	if (duty > 1000) {
-		UART_OutString("Error: Duty above max \r\n");
+		terminal_printString("Error: Duty above max \r\n");
 		return;
 	}
 	
 	if (channel >= NUM_PWM_CHANNELS) {
-		UART_OutString("Error: PWM channel not supported \r\n");
+		terminal_printString("Error: PWM channel not supported \r\n");
 		return;
 	}
 	
@@ -307,7 +307,7 @@ void setPWMChannelDuty(uint8_t channel, uint16_t duty) {
 			break;
 		
 		default:
-			UART_OutString("Error: Unsupported PWM channel\r\n");
+			terminal_printString("Error: Unsupported PWM channel\r\n");
 			return;
 	}
 }

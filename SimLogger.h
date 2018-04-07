@@ -16,4 +16,4 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks);
 /**
  * Print log to UART.
  */
-void SimLogger_PrintToUART(void);
+void SimLogger_PrintToTerminal(void);

@@ -14,7 +14,10 @@
 #include "Actuators.h"
 #include "UART.h"
 #include "SimLogger.h"
+#include "OS.h"
+#include "terminal.h"
 
+#define CLOCK_FREQ 80000000 // 80 Mhz
 #define SIM_FREQ 10 // Hz
 #define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
 
@@ -28,15 +31,19 @@ struct wall Walls[NUM_WALLS];
 
 void initObjects(void);
 void initSystick(void);
-void endSim(void);
+void simThread(void);
+void foregroundThread(void);
 
-uint32_t NumTicks = 0;
-uint8_t SimComplete = 0;
+uint32_t NumSimTicks = 0;
+uint8_t SimComplete = 0; // Note: This is shared by bg and fg threads, so there
+                         //       is minor race (log print will potentially be 
+												 //       delayed by one loop in fg thread).
 
 int main(void){
-	// Inits
-	PLL_Init(Bus80MHz);
-	UART_Init();
+  OS_Init();
+	
+	// Simulator inits
+	terminal_init();
 	initObjects();
 	Sensors_Init(&Car);
 	Actuators_Init();
@@ -45,81 +52,75 @@ int main(void){
 	Simulator_UpdateSensors(&Car);
 	Sensors_UpdateOutput(&Car);
 	
-	// Print initial message
-	UART_OutString("Beginning test... \r\n");
+	// Background sim thread
+  OS_AddPeriodicThread(&simThread, CLOCK_FREQ / SIM_FREQ, 3); // 10 hz, lower priority than UART
 	
-	// Starts simulation
-	initSystick();
+	// Foreground user communication thread
+	OS_AddThread(&foregroundThread,128,2); 
 
-	while (!SimComplete) {}
-
-	SimLogger_PrintToUART();
-	
-	// Give UART time to finish emptying FIFO. Otherwise exits before
-	// finishes printing.
-  while (1) {}
+	OS_Launch(TIME_2MS);
 }
 
 /**
- * Used to create discrete events for sim. Every time ST interrupt is triggered
- * the sim collects actuator value, updates car's position in environment, and
- * produces next set of sensor values.
- */
-void initSystick(void) {
-	NVIC_ST_CTRL_R = 0;
-	NVIC_ST_RELOAD_R = 80000000 / SIM_FREQ; // Clock freq (80MHz) / sim freq
-	NVIC_ST_CURRENT_R = 0;
-	NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x1FFFFFFF);	// Priority 0
-	NVIC_ST_CTRL_R = 7;
-}
-
-/**
+ * Sim background thread. Creates discrete events for sim. Every time timer 
+ * interrupt is triggered the sim collects actuator value, updates car's 
+ * position in environment, and produces next set of sensor values.
+ *
  * 1) Updates actuator values. 
  * 2) Logs actuator values (set this st), sensor values (set last st), and car
  *		state (set last st). This is done so that the car state that caused the
  *		sensor and actuator values is logged.
  * 3) Update car state using new actuator values.
  * 4) Update sensor values.
- * 5) Increment NumTicks.
+ * 5) Increment NumSimTicks.
  */
-void SysTick_Handler(void) {
+void simThread(void) {
 	// Store car's previous x,y to later check if hit a wall.
 	uint32_t prevX = Car.x;
 	uint32_t prevY = Car.y;
 	
 	// Update actuator values (velocity and direction) and log.
 	Actuators_UpdateVelocityAndDirection(&Car);
-	SimLogger_LogRow(&Car, NumTicks);
+	SimLogger_LogRow(&Car, NumSimTicks);
 		
 	// Update car position based on current position, velocity, and direction.
 	Simulator_MoveCar(&Car, SIM_FREQ);
 	
 	// Check if hit wall
 	if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
-		UART_OutString("Car crashed into wall!\r\n");
-		endSim();
+		terminal_printString("Car crashed into wall!\r\n");
+		SimLogger_PrintToTerminal();
+		SimComplete = 1;
+		OS_RemovePeriodicThread();
 	}
 	
 	// Update sensor vals and update voltages being outputted to car.
 	Simulator_UpdateSensors(&Car);
 	Sensors_UpdateOutput(&Car);
 	
-	NumTicks++;
+	NumSimTicks++;
 	
-	if (NumTicks == MAX_NUM_TICKS) {
-		UART_OutString("Sim hit max num ticks: ");
-		UART_OutUDec(NumTicks);
-		UART_OutString("\r\n");
-		endSim();
+	if (NumSimTicks == MAX_NUM_TICKS) {
+		SimComplete = 1;
+		OS_RemovePeriodicThread();
 	}
 }
 
 /**
- * Disable systick and set SimComplete.
+ * Terminal foreground thread.
  */
-void endSim(void) {
-	//NVIC_ST_CTRL_R = 0;
-	//SimComplete = 1;	
+void foregroundThread(void) {
+	while(1) {
+		if (SimComplete) {
+			terminal_printString("Sim hit max num ticks: ");
+			terminal_printValueDec(NumSimTicks);
+			terminal_printString("\r\n\r\n");
+			SimLogger_PrintToTerminal();
+			terminal_printString("\r\nTest complete.\r\n\r\n");
+
+			SimComplete = 0;
+		}
+	}
 }
 
 /**

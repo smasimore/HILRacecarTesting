@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include "SimLogger.h"
 #include "Simulator.h"
-#include "UART.h"
+#include "terminal.h"
 
 #define MAX_ROWS 100 // Will log for 100 seconds since ST frequency is 10Hz
 
@@ -51,7 +51,6 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 	row.sensor0 = car->sensors[0].val;
 	row.sensor1 = car->sensors[1].val;
 	
-	
 	SimLog[NextRow++] = row;
 	
 	EndCritical(oldIntrState);
@@ -60,28 +59,28 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 /**
  * Print log to UART.
  */
-void SimLogger_PrintToUART(void) {
+void SimLogger_PrintToTerminal(void) {
 	struct row row;
 	int i;
 	
-	UART_OutString("----- Test Results ----- \r\n");
-	UART_OutString("numTicks,carX,car Y,car V,carDir,sensor0,sensor1\r\n");
+	terminal_printString("----- Test Results ----- \r\n");
+	terminal_printString("numTicks,carX,car Y,car V,carDir,sensor0,sensor1\r\n");
 	
 	for (i = 0; i < NextRow; i++) {
 		row = SimLog[i];
-		UART_OutUDec(row.numTicks);
-		UART_OutString(",");
-		UART_OutUDec(row.carX);
-		UART_OutString(",");
-		UART_OutUDec(row.carY);
-		UART_OutString(",");
-		UART_OutUDec(row.carV);
-		UART_OutString(",");
-		UART_OutUDec(row.carDir);
-		UART_OutString(",");
-		UART_OutUDec(row.sensor0);
-		UART_OutString(",");
-		UART_OutUDec(row.sensor1);
-		UART_OutString("\r\n");
+		terminal_printValueDec(row.numTicks);
+		terminal_printString(",");
+		terminal_printValueDec(row.carX);
+		terminal_printString(",");
+		terminal_printValueDec(row.carY);
+		terminal_printString(",");
+		terminal_printValueDec(row.carV);
+		terminal_printString(",");
+		terminal_printValueDec(row.carDir);
+		terminal_printString(",");
+		terminal_printValueDec(row.sensor0);
+		terminal_printString(",");
+		terminal_printValueDec(row.sensor1);
+		terminal_printString("\r\n");
 	}
 }
