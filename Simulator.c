@@ -34,5 +34,6 @@ uint8_t Simulator_HitWall(uint32_t prevX, uint32_t prevY,
  * to closest wall.
  */
 void Simulator_UpdateSensors(struct car * car) {
-	// based on where
+	// Loop through sensors. Based on their type and distance from nearest
+	// wall in its path, update voltage value in struct car.
 }

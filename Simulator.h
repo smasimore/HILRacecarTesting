@@ -21,12 +21,15 @@
  */
 enum sensor_type {
 	S_TEST,
+	S_PING,
+	S_IR,
 };
 
 struct sensor {
-	enum sensor_type type;
-	uint16_t dir;
-	uint32_t val;
+	enum sensor_type type; // Ping, IR, etc. Influences mapping from val to voltage
+	uint16_t dir; // used to calculate val
+	uint32_t val; // distance from nearest wall in path of sensor
+	uint8_t channel; // hardware channel output is on, set by Sensors_Init
 };
 
 /**

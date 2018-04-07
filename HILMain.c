@@ -36,14 +36,14 @@ uint8_t SimComplete = 0;
 int main(void){
 	// Inits
 	PLL_Init(Bus80MHz);
+	UART_Init();
 	initObjects();
 	Sensors_Init(&Car);
 	Actuators_Init();
-	UART_Init();
 	
 	// Set sensors to initial state.
 	Simulator_UpdateSensors(&Car);
-	Sensors_UpdateVoltages(&Car);
+	Sensors_UpdateOutput(&Car);
 	
 	// Print initial message
 	UART_OutString("Beginning test... \r\n");
@@ -102,7 +102,7 @@ void SysTick_Handler(void) {
 	
 	// Update sensor vals and update voltages being outputted to car.
 	Simulator_UpdateSensors(&Car);
-	Sensors_UpdateVoltages(&Car);
+	Sensors_UpdateOutput(&Car);
 	
 	NumTicks++;
 	
@@ -118,8 +118,8 @@ void SysTick_Handler(void) {
  * Disable systick and set SimComplete.
  */
 void endSim(void) {
-	NVIC_ST_CTRL_R = 0;
-	SimComplete = 1;	
+	//NVIC_ST_CTRL_R = 0;
+	//SimComplete = 1;	
 }
 
 /**
@@ -134,7 +134,7 @@ void endSim(void) {
  *       |   C   |
  *        -------
  *
- * C.v = 0, V.dir = 90
+ * C.v = 0, C.dir = 90
  * 
  */
 void initObjects(void) { // initObjectsSimple

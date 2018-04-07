@@ -10,7 +10,7 @@
 #include "Simulator.h"
 #include "UART.h"
 
-#define MAX_ROWS 100 // Will log for 100s since ST frequency is 10Hz
+#define MAX_ROWS 100 // Will log for 100 seconds since ST frequency is 10Hz
 
 uint32_t StartCritical(void); 
 void EndCritical(uint32_t oldState);
@@ -35,7 +35,13 @@ uint16_t NextRow = 0;
  */
 void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 	struct row row;
+	
 	uint32_t oldIntrState = StartCritical();
+
+	if (NextRow == MAX_ROWS) {
+		EndCritical(oldIntrState);
+		return;
+	}
 	
 	row.numTicks = numTicks;
 	row.carX = car->x;
@@ -45,9 +51,10 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 	row.sensor0 = car->sensors[0].val;
 	row.sensor1 = car->sensors[1].val;
 	
-	EndCritical(oldIntrState);
 	
 	SimLog[NextRow++] = row;
+	
+	EndCritical(oldIntrState);
 }
 
 /**

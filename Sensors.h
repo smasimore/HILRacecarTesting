@@ -17,4 +17,4 @@ void Sensors_Init(struct car * car);
 /**
  * Based on sensor value, determine and update voltage on its pin.
  */
-void Sensors_UpdateVoltages(struct car * car);
+void Sensors_UpdateOutput(struct car * car);
