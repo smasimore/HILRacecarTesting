@@ -18,6 +18,7 @@ uint8_t SensorsInitialized = 0;
 
 void initPWMChannel(struct sensor * sensor);
 void setPWMChannelDuty(uint8_t channel, uint16_t duty);
+uint16_t getDutyFromIRSensorVal(uint32_t val);
 
 /**
  * Init sensor's required output pins.
@@ -47,7 +48,8 @@ void Sensors_Init(struct car * car) {
 
 /**
  * Init PWM channel for a sensor. Currently supports up to 6 channels. PWM on
- * TM4C supports up to 8 different PWM outputs. 
+ * TM4C supports up to 8 different PWM outputs. Channel sensor assigned to 
+ * added to sensor struct.
  *
  * Note: PWM output pins come in pairs with same output. Need to be careful
  * which pin is chosen.
@@ -221,6 +223,7 @@ void initPWMChannel(struct sensor * sensor) {
 void Sensors_UpdateOutput(struct car * car) {
 	int i;
 	struct sensor * sensor;	
+	uint16_t duty;
 	
 	// Sensor number maps to a pwm (see Sensor_Init).
 	// Using sensor.val (distance to wall), use sensor's val --> voltage mapping
@@ -229,10 +232,12 @@ void Sensors_UpdateOutput(struct car * car) {
 		sensor = &car->sensors[i];
 		switch (sensor->type) {
 			case S_TEST:
-				setPWMChannelDuty(sensor->channel, 1000 / NUM_PWM_CHANNELS * sensor->channel);
+				duty = 1000 / NUM_PWM_CHANNELS * sensor->channel;
+				setPWMChannelDuty(sensor->channel, duty);
 				break;
 			case S_IR:
-				// todo
+			  duty = getDutyFromIRSensorVal(sensor->val);
+				setPWMChannelDuty(sensor->channel, duty);
 				break;
 			case S_PING:
 				// todo
@@ -242,6 +247,15 @@ void Sensors_UpdateOutput(struct car * car) {
 				continue;	
 		}
 	}
+}
+
+/**
+ * Given value (distance from closest object in path of sensor), determine
+ * duty value to pass PWM. Duty is % time low (resolution .1%).
+ */
+uint16_t getDutyFromIRSensorVal(uint32_t val) {
+	// todo
+	return 500;
 }
 
 /**
