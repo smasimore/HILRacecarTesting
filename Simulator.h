@@ -3,7 +3,7 @@
  * Author: Sarah Masimore
  * Last Updated Date: 03/14/2018
  * Description: Manages simulation, including environment, car, sensors, and 
- * 							actuators. Units in centimeters.
+ * 							actuators. Units in millimeters.
  */
 
 #ifndef SIMULATOR_H
@@ -11,12 +11,15 @@
 
 #include <stdint.h>
 
+#define MAX_SENSOR_LINE_OF_SIGHT 10000 // 10 meters
+#define MAX_U32INT 1U << 31
+
 
 // STRUCTS
 
 
 /**
- * Sensor type used to map environment values (e.g. 10 cm away from wall) to
+ * Sensor type used to map environment values (e.g. 10 mm away from wall) to
  * voltage the sensor should output to the car.
  */
 enum sensor_type {
@@ -27,7 +30,7 @@ enum sensor_type {
 
 struct sensor {
 	enum sensor_type type; // Ping, IR, etc. Influences mapping from val to voltage
-	uint16_t dir; // used to calculate val
+  int32_t dir; // direction in angles
 	uint32_t val; // distance from nearest wall in path of sensor
 	uint8_t channel; // hardware channel output is on, set by Sensors_Init
 };
@@ -36,15 +39,15 @@ struct sensor {
  * Car object is represented as one point in the environment. 
  */
 struct car {
-	// Position. Bottom left corner of environment is (0, 0). Units in cm.
+	// Position. Bottom left corner of environment is (0, 0). Units in mm.
 	uint32_t x;	
 	uint32_t y;
 	
-	// Velocity and direction. Velocity of var in cm/s. Direction of car in 
+	// Velocity and direction. Velocity of var in mm/s. Direction of car in 
 	// degrees.	If top of environment is north, dir = 0 --> car pointing east. 
 	// dir = 90 --> car pointing north.
 	uint32_t v; 
-  uint16_t dir;
+  int32_t dir; // direction relative to environment bottom boundary, in angles
 	
 	// Sensors and actuators.
 	uint8_t numSensors;
@@ -86,6 +89,6 @@ uint8_t Simulator_HitWall(uint32_t prevX, uint32_t prevY,
  * sensor's direction, car's direction, and car's position determine distance
  * to closest wall.
  */
-void Simulator_UpdateSensors(struct car * car);
+void Simulator_UpdateSensors(struct car * car, struct environment * env);
 
 #endif // SIMULATOR_H

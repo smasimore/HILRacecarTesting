@@ -1,6 +1,5 @@
 /********** terminal.c ************** 
-Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
-Lab Number: 16000
+Name: Sarah Masimore and Zachary Susskind 
 Created Date: 01/22/2018
 Last Updated Date: 02/20/2018
 Description: Implements interfacing with CLI via UART. See "Command Reference.txt" for command format details.
@@ -174,7 +173,7 @@ Outputs: none
 */
 void terminal_init(void){
   UART_Init();
-  UART_OutString("\r\nStarting Hardware-In-The-Loop Program\r\n");
+  UART_OutString("\r\nRunning Hardware-In-The-Loop Program\r\n");
   Initialized = 1;
 }
 

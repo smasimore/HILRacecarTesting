@@ -1,7 +1,7 @@
 /*	
  * File: HILMain.c
  * Author: Sarah Masimore
- * Last Updated Date: 03/14/2018
+ * Last Updated Date: 04/07/2018
  * Description: Controller managing simulator, actuators, sensors, and timer 
  * 							interrupt for racecar HIL testing.
 */
@@ -31,13 +31,11 @@ struct wall Walls[NUM_WALLS];
 
 void initObjects(void);
 void initSystick(void);
+void addSimFGThread(void);
 void simThread(void);
-void foregroundThread(void);
+void terminal(void);
 
 uint32_t NumSimTicks = 0;
-uint8_t SimComplete = 0; // Note: This is shared by bg and fg threads, so there
-                         //       is minor race (log print will potentially be 
-												 //       delayed by one loop in fg thread).
 
 int main(void){
   OS_Init();
@@ -49,16 +47,27 @@ int main(void){
 	Actuators_Init();
 	
 	// Set sensors to initial state.
-	Simulator_UpdateSensors(&Car);
+	Simulator_UpdateSensors(&Car, &Environment);
 	Sensors_UpdateOutput(&Car);
 	
 	// Background sim thread
-  OS_AddPeriodicThread(&simThread, CLOCK_FREQ / SIM_FREQ, 3); // 10 hz, lower priority than UART
+  OS_AddPeriodicThread(&addSimFGThread, CLOCK_FREQ / SIM_FREQ, 3); // 10 hz
 	
 	// Foreground user communication thread
-	OS_AddThread(&foregroundThread,128,2); 
+	OS_AddThread(&terminal,128,2); 
 
+	terminal_printString("\r\n Starting test...\r\n");
 	OS_Launch(TIME_2MS);
+}
+
+/**
+ * Periodic background thread that adds the simThread to the foreground. 
+ * simThread should not be run in an ISR because it a) is relatively long and 
+ * b) if it fills up the UART buffer, it will hang because the UART interrupt 
+ * won't be able to run to clear the buffer (so simThread would spin.
+ */
+void addSimFGThread(void) {
+  OS_AddThread(&simThread, 128, 1); // 10 hz, higher priority than terminal
 }
 
 /**
@@ -90,36 +99,33 @@ void simThread(void) {
 	if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
 		terminal_printString("Car crashed into wall!\r\n");
 		SimLogger_PrintToTerminal();
-		SimComplete = 1;
 		OS_RemovePeriodicThread();
 	}
 	
 	// Update sensor vals and update voltages being outputted to car.
-	Simulator_UpdateSensors(&Car);
+	Simulator_UpdateSensors(&Car, &Environment);
 	Sensors_UpdateOutput(&Car);
 	
 	NumSimTicks++;
 	
 	if (NumSimTicks == MAX_NUM_TICKS) {
-		SimComplete = 1;
+		terminal_printString("Sim hit max num ticks: ");
+		terminal_printValueDec(NumSimTicks);
+		terminal_printString("\r\n\r\n");
+		SimLogger_PrintToTerminal();
+		terminal_printString("\r\nTest complete.\r\n\r\n");
 		OS_RemovePeriodicThread();
 	}
+	
+	OS_Kill();
 }
 
 /**
  * Terminal foreground thread.
  */
-void foregroundThread(void) {
+void terminal(void) {
 	while(1) {
-		if (SimComplete) {
-			terminal_printString("Sim hit max num ticks: ");
-			terminal_printValueDec(NumSimTicks);
-			terminal_printString("\r\n\r\n");
-			SimLogger_PrintToTerminal();
-			terminal_printString("\r\nTest complete.\r\n\r\n");
-
-			SimComplete = 0;
-		}
+		terminal_ReadAndParse();
 	}
 }
 
@@ -145,11 +151,17 @@ void initObjects(void) { // initObjectsSimple
 	Walls[0].startY = 0;
 	Walls[0].endX = 1000;
 	Walls[0].endY = 5000;
-
+/*
 	Walls[1].startX = 3000;
 	Walls[1].startY = 0;
 	Walls[1].endX = 3000;
 	Walls[1].endY = 5000;
+*/
+
+	Walls[1].startX = 4000;
+	Walls[1].startY = 2000;
+	Walls[1].endX = 0;
+	Walls[1].endY = 2000;	
 
 	Environment.numWalls = NUM_WALLS;
 	Environment.walls = Walls;	
@@ -158,7 +170,7 @@ void initObjects(void) { // initObjectsSimple
 	for (i = 0; i < NUM_SENSORS; i++) {
 		Sensors[i].type = S_TEST;
 		Sensors[i].val = 0;
-		Sensors[i].dir = 0;
+		Sensors[i].dir = 45; // relative to car direction
 	}
 	
 	Car.numSensors = NUM_SENSORS;
