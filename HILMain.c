@@ -31,6 +31,7 @@ void addSimFGThread(void);
 void simThread(void);
 void terminal(void);
 void idle(void);
+void endSim(char * message);
 
 uint32_t NumSimTicks = 0;
 
@@ -100,12 +101,14 @@ void simThread(void) {
 	
 	// Check if hit wall
 	if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
-		terminal_printString("Car crashed into wall!\r\n");
-		SimLogger_PrintToTerminal();
-		OS_RemovePeriodicThread();
+		endSim("Car crashed into wall!");
 	}
 	
-	// TODO: if y > finish line, end race
+	// If got to this point and car's y position is higher than finish line,
+	// race is over.
+	if (Car.y >= Environment.finishLineY) {
+		endSim("Car completed race!");
+	}		
 	
 	// Update sensor vals and update voltages being outputted to car.
 	Simulator_UpdateSensors(&Car, &Environment);
@@ -114,12 +117,7 @@ void simThread(void) {
 	NumSimTicks++;
 	
 	if (NumSimTicks == MAX_NUM_TICKS) {
-		terminal_printString("Sim hit max num ticks: ");
-		terminal_printValueDec(NumSimTicks);
-		terminal_printString("\r\n\r\n");
-		SimLogger_PrintToTerminal();
-		terminal_printString("\r\nTest complete.\r\n\r\n");
-		OS_RemovePeriodicThread();
+		endSim("Sim hit max num ticks");
 	}
 	
 	OS_Kill();
@@ -164,12 +162,6 @@ void initObjects(void) { // initObjectsSimple
 	Walls[0].startY = 0;
 	Walls[0].endX = 1000;
 	Walls[0].endY = 5000;
-/*
-	Walls[1].startX = 3000;
-	Walls[1].startY = 0;
-	Walls[1].endX = 3000;
-	Walls[1].endY = 5000;
-*/
 
 	Walls[1].startX = 4000;
 	Walls[1].startY = 2000;
@@ -178,7 +170,7 @@ void initObjects(void) { // initObjectsSimple
 
 	Environment.numWalls = NUM_WALLS;
 	Environment.walls = Walls;	
-	Environment.finishLineY = 5000;	
+	Environment.finishLineY = 2000;	
 	
 	for (i = 0; i < NUM_SENSORS; i++) {
 		Sensors[i].type = S_TEST;
@@ -194,4 +186,14 @@ void initObjects(void) { // initObjectsSimple
 	Car.y = 0;
 	Car.vel = 0;
 	Car.dir = 90;
+}
+
+void endSim(char * message) {
+	OS_RemovePeriodicThread();
+	terminal_printString("\r\n");
+	SimLogger_PrintToTerminal();
+	terminal_printString("\r\n");
+	terminal_printString(message);
+	terminal_printString("\r\n");
+	terminal_printString("Test complete.\r\n\r\n");
 }
