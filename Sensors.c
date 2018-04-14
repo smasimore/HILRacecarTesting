@@ -255,7 +255,7 @@ void Sensors_UpdateOutput(struct car * car) {
  */
 uint16_t getDutyFromIRSensorVal(uint32_t val) {
 	// todo
-	return 500;
+	return 500; // 50.0%
 }
 
 /**
@@ -281,29 +281,30 @@ void setPWMChannelDuty(uint8_t channel, uint16_t duty) {
 		duty_ticks = PWM_PERIOD - 2;
 	}
 	
+	// Set count value when output rises
 	switch (channel) {
 		case 0:
-			PWM0_0_CMPB_R = duty_ticks; // Count value when output rises
+			PWM0_0_CMPB_R = duty_ticks;
 			break;
 	
 		case 1:
-			PWM0_3_CMPB_R = duty_ticks; // Count value when output rises
+			PWM0_3_CMPB_R = duty_ticks;
 			break;
 		
 		case 2:
-			PWM1_0_CMPB_R = duty_ticks; // Count value when output rises
+			PWM1_0_CMPB_R = duty_ticks;
 			break;
 		
 		case 3:
-			PWM1_2_CMPB_R = duty_ticks; // Count value when output rises
+			PWM1_2_CMPB_R = duty_ticks;
 			break;
 		
 		case 4:
-			PWM1_3_CMPB_R = duty_ticks; // Count value when output rises
+			PWM1_3_CMPB_R = duty_ticks;
 			break;
 		
 		case 5:
-			PWM1_1_CMPB_R = duty_ticks; // Count value when output rises
+			PWM1_1_CMPB_R = duty_ticks;
 			break;
 		
 		default:

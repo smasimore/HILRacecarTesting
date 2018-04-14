@@ -34,6 +34,7 @@ void initSystick(void);
 void addSimFGThread(void);
 void simThread(void);
 void terminal(void);
+void idle(void);
 
 uint32_t NumSimTicks = 0;
 
@@ -51,11 +52,12 @@ int main(void){
 	Sensors_UpdateOutput(&Car);
 	
 	// Background sim thread
-  OS_AddPeriodicThread(&addSimFGThread, CLOCK_FREQ / SIM_FREQ, 3); // 10 hz
+  OS_AddPeriodicThread(&addSimFGThread, CLOCK_FREQ / SIM_FREQ, 2); // 10 hz
 	
 	// Foreground user communication thread
-	OS_AddThread(&terminal,128,2); 
-
+	OS_AddThread(&terminal, 128, 3); 
+	OS_AddThread(&idle, 128, 9); 
+	
 	terminal_printString("\r\n Starting test...\r\n");
 	OS_Launch(TIME_2MS);
 }
@@ -128,6 +130,14 @@ void terminal(void) {
 		terminal_ReadAndParse();
 	}
 }
+
+/**
+ * Idle foreground thread.
+ */
+void idle(void) {
+	while(1) {}
+}
+
 
 /**
  * Init state:
