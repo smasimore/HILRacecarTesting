@@ -17,10 +17,6 @@
 #include "OS.h"
 #include "terminal.h"
 
-#define CLOCK_FREQ 80000000 // 80 Mhz
-#define SIM_FREQ 10 // Hz
-#define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
-
 #define NUM_SENSORS 6
 #define NUM_WALLS 2
 
@@ -56,6 +52,8 @@ int main(void){
 	
 	// Foreground user communication thread
 	OS_AddThread(&terminal, 128, 3); 
+	
+	// Foreground idle threaad
 	OS_AddThread(&idle, 128, 9); 
 	
 	terminal_printString("\r\n Starting test...\r\n");
@@ -66,7 +64,7 @@ int main(void){
  * Periodic background thread that adds the simThread to the foreground. 
  * simThread should not be run in an ISR because it a) is relatively long and 
  * b) if it fills up the UART buffer, it will hang because the UART interrupt 
- * won't be able to run to clear the buffer (so simThread would spin.
+ * won't be able to run to clear the buffer (simThread will hang).
  */
 void addSimFGThread(void) {
   OS_AddThread(&simThread, 128, 1); // 10 hz, higher priority than terminal
@@ -92,6 +90,9 @@ void simThread(void) {
 	
 	// Update actuator values (velocity and direction) and log.
 	Actuators_UpdateVelocityAndDirection(&Car);
+	
+	// Log event after velocity and dir have been updated but before
+	// car location has been updated.
 	SimLogger_LogRow(&Car, NumSimTicks);
 		
 	// Update car position based on current position, velocity, and direction.
@@ -103,6 +104,8 @@ void simThread(void) {
 		SimLogger_PrintToTerminal();
 		OS_RemovePeriodicThread();
 	}
+	
+	// TODO: if y > finish line, end race
 	
 	// Update sensor vals and update voltages being outputted to car.
 	Simulator_UpdateSensors(&Car, &Environment);
@@ -189,6 +192,6 @@ void initObjects(void) { // initObjectsSimple
 	// Start car in the middle of the two walls, no velocity, facing north.
 	Car.x = 2000;
 	Car.y = 0;
-	Car.v = 0;
+	Car.vel = 0;
 	Car.dir = 90;
 }

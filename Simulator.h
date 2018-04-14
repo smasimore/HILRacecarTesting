@@ -11,6 +11,10 @@
 
 #include <stdint.h>
 
+#define CLOCK_FREQ 80000000 // 80 Mhz
+#define SIM_FREQ 10 // Hz
+#define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
+
 #define MAX_SENSOR_LINE_OF_SIGHT 10000 // 10 meters
 #define MAX_U32INT 1U << 31
 
@@ -30,7 +34,7 @@ enum sensor_type {
 
 struct sensor {
 	enum sensor_type type; // Ping, IR, etc. Influences mapping from val to voltage
-  int32_t dir; // direction in angles
+  uint32_t dir; // direction in angles, 0 - 360
 	uint32_t val; // distance from nearest wall in path of sensor
 	uint8_t channel; // hardware channel output is on, set by Sensors_Init
 };
@@ -43,11 +47,11 @@ struct car {
 	uint32_t x;	
 	uint32_t y;
 	
-	// Velocity and direction. Velocity of var in mm/s. Direction of car in 
-	// degrees.	If top of environment is north, dir = 0 --> car pointing east. 
-	// dir = 90 --> car pointing north.
-	uint32_t v; 
-  int32_t dir; // direction relative to environment bottom boundary, in angles
+	// Velocity and direction. If top of environment is north, dir = 0 --> car 
+	// pointing east, dir = 90 --> car pointing north.
+	uint32_t vel; // mm/s
+  uint32_t dir; // direction relative to environment bottom boundary, degrees, 
+	              // 0 - 360
 	
 	// Sensors and actuators.
 	uint8_t numSensors;

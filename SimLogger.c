@@ -10,8 +10,6 @@
 #include "Simulator.h"
 #include "terminal.h"
 
-#define MAX_ROWS 100 // Will log for 100 seconds since ST frequency is 10Hz
-
 uint32_t StartCritical(void); 
 void EndCritical(uint32_t oldState);
 
@@ -27,7 +25,7 @@ struct row {
 	uint32_t actuator1;	
 };
 
-struct row SimLog[MAX_ROWS];
+struct row SimLog[MAX_NUM_TICKS];
 uint16_t NextRow = 0;
 
 /**
@@ -38,7 +36,7 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 	
 	uint32_t oldIntrState = StartCritical();
 
-	if (NextRow == MAX_ROWS) {
+	if (NextRow == MAX_NUM_TICKS) {
 		EndCritical(oldIntrState);
 		return;
 	}
@@ -46,7 +44,7 @@ void SimLogger_LogRow(struct car * car, uint32_t numTicks) {
 	row.numTicks = numTicks;
 	row.carX = car->x;
 	row.carY = car->y;
-	row.carV = car->v;
+	row.carV = car->vel;
 	row.carDir = car->dir;
 	row.sensor0 = car->sensors[0].val;
 	row.sensor1 = car->sensors[1].val;

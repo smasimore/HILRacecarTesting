@@ -22,8 +22,26 @@ int32_t getDistanceBetweenPoints(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
  * Simulator_HitWall.
  */
 void Simulator_MoveCar(struct car * car, uint32_t simFreq) {
+	uint32_t vel = car->vel;
+	uint32_t dir = car->dir;
+  uint32_t x = car->x;
+	uint32_t y = car->y;
+	uint32_t hyp = vel / SIM_FREQ; // get distance traveled (hypoteneuse)
+	int32_t deltaX = CosLookup[dir]*(int32_t)hyp/TRIG_SCALE;
+	int32_t deltaY = SinLookup[dir]*(int32_t)hyp/TRIG_SCALE;
+
+	// Prevent car's x position from overflowing.
+	if (deltaX < 0 && (-1*deltaX > x)) {
+		car->x = 0;
+	} else {	
+		car->x = car->x + deltaX;
+	}
 	
-	
+	if (deltaY < 0 && (-1*deltaY > y)) {
+		car->y = 0;
+	} else {
+		car->y = car->y + deltaY;
+	}
 }
 
 /**
