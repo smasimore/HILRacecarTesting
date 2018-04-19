@@ -1,8 +1,7 @@
 /********** getHighest.c ************** 
- Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
- Lab Number: 16000
- Created Date: 02/25/2018
- Last Updated Date: 02/25/2018
+ * Authors: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
+ * Created Date: 02/25/2018
+ * Last Updated Date: 02/25/2018
  Description: Implements a function to get the highest priority of any active thread
 */
 

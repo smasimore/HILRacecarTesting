@@ -1,8 +1,7 @@
 /********** terminal.h ************** 
-Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
-Lab Number: 16000
-Created Date: 01/22/2018
-Last Updated Date: 01/24/2018
+* Authors: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
+* Created Date: 01/22/2018
+* Last Updated Date: 01/24/2018
 Description: Implements interfacing with CLI via UART. See "Command Reference.txt" for command format details.
   If USE_TERMINAL is 0, the UART terminal is not actually supported, and most of these functions are just dummies.
   If TERMINAL_DEBUGGING is 0, debug info messages are suppressed.

@@ -1,10 +1,10 @@
-/*	
+/**
  * File: HILMain.c
  * Author: Sarah Masimore
  * Last Updated Date: 04/07/2018
  * Description: Controller managing simulator, actuators, sensors, and timer 
- * 							interrupt for racecar HIL testing.
-*/
+ *              interrupt for racecar HIL testing.
+ */
 
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
@@ -25,6 +25,8 @@ struct environment Environment;
 struct sensor Sensors[NUM_SENSORS];
 struct wall Walls[NUM_WALLS];
 
+uint32_t NumSimTicks = 0;
+
 void initObjects(void);
 void initSystick(void);
 void addSimFGThread(void);
@@ -33,32 +35,30 @@ void terminal(void);
 void idle(void);
 void endSim(char * message);
 
-uint32_t NumSimTicks = 0;
-
 int main(void){
   OS_Init();
-	
-	// Simulator inits
-	terminal_init();
-	initObjects();
-	Sensors_Init(&Car);
-	Actuators_Init();
-	
-	// Set sensors to initial state.
-	Simulator_UpdateSensors(&Car, &Environment);
-	Sensors_UpdateOutput(&Car);
-	
-	// Background sim thread
+  
+  // Simulator inits
+  terminal_init();
+  initObjects();
+  Sensors_Init(&Car);
+  Actuators_Init();
+  
+  // Set sensors to initial state.
+  Simulator_UpdateSensors(&Car, &Environment);
+  Sensors_UpdateOutput(&Car);
+  
+  // Background sim thread
   OS_AddPeriodicThread(&addSimFGThread, CLOCK_FREQ / SIM_FREQ, 2); // 10 hz
-	
-	// Foreground user communication thread
-	OS_AddThread(&terminal, 128, 3); 
-	
-	// Foreground idle threaad
-	OS_AddThread(&idle, 128, 9); 
-	
-	terminal_printString("\r\n Starting test...\r\n");
-	OS_Launch(TIME_2MS);
+  
+  // Foreground user communication thread
+  OS_AddThread(&terminal, 128, 3); 
+  
+  // Foreground idle threaad
+  OS_AddThread(&idle, 128, 9); 
+  
+  terminal_printString("\r\n Starting test...\r\n");
+  OS_Launch(TIME_2MS);
 }
 
 /**
@@ -78,65 +78,65 @@ void addSimFGThread(void) {
  *
  * 1) Updates actuator values. 
  * 2) Logs actuator values (set this st), sensor values (set last st), and car
- *		state (set last st). This is done so that the car state that caused the
- *		sensor and actuator values is logged.
+ *    state (set last st). This is done so that the car state that caused the
+ *    sensor and actuator values is logged.
  * 3) Update car state using new actuator values.
  * 4) Update sensor values.
  * 5) Increment NumSimTicks.
  */
 void simThread(void) {
-	// Store car's previous x,y to later check if hit a wall.
-	uint32_t prevX = Car.x;
-	uint32_t prevY = Car.y;
-	
-	// Update actuator values (velocity and direction) and log.
-	Actuators_UpdateVelocityAndDirection(&Car);
-	
-	// Log event after velocity and dir have been updated but before
-	// car location has been updated.
-	SimLogger_LogRow(&Car, NumSimTicks);
-		
-	// Update car position based on current position, velocity, and direction.
-	Simulator_MoveCar(&Car, SIM_FREQ);
-	
-	// Check if hit wall
-	if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
-		endSim("Car crashed into wall!");
-	}
-	
-	// If got to this point and car's y position is higher than finish line,
-	// race is over.
-	if (Car.y >= Environment.finishLineY) {
-		endSim("Car completed race!");
-	}		
-	
-	// Update sensor vals and update voltages being outputted to car.
-	Simulator_UpdateSensors(&Car, &Environment);
-	Sensors_UpdateOutput(&Car);
-	
-	NumSimTicks++;
-	
-	if (NumSimTicks == MAX_NUM_TICKS) {
-		endSim("Sim hit max num ticks");
-	}
-	
-	OS_Kill();
+  // Store car's previous x,y to later check if hit a wall.
+  uint32_t prevX = Car.x;
+  uint32_t prevY = Car.y;
+  
+  // Update actuator values (velocity and direction) and log.
+  Actuators_UpdateVelocityAndDirection(&Car);
+  
+  // Log event after velocity and dir have been updated but before
+  // car location has been updated.
+  SimLogger_LogRow(&Car, NumSimTicks);
+    
+  // Update car position based on current position, velocity, and direction.
+  Simulator_MoveCar(&Car, SIM_FREQ);
+  
+  // Check if hit wall.
+  if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
+    endSim("Car crashed into wall!");
+  }
+  
+  // If got to this point and car's y position is higher than finish line,
+  // race is over.
+  if (Car.y >= Environment.finishLineY) {
+    endSim("Car completed race!");
+  }    
+  
+  // Update sensor vals and update voltages being outputted to car.
+  Simulator_UpdateSensors(&Car, &Environment);
+  Sensors_UpdateOutput(&Car);
+  
+  NumSimTicks++;
+  
+  if (NumSimTicks == MAX_NUM_TICKS) {
+    endSim("Sim hit max num ticks");
+  }
+  
+  OS_Kill();
 }
 
 /**
  * Terminal foreground thread.
  */
 void terminal(void) {
-	while(1) {
-		terminal_ReadAndParse();
-	}
+  while(1) {
+    terminal_ReadAndParse();
+  }
 }
 
 /**
  * Idle foreground thread.
  */
 void idle(void) {
-	while(1) {}
+  while(1) {}
 }
 
 
@@ -156,44 +156,44 @@ void idle(void) {
  * 
  */
 void initObjects(void) { // initObjectsSimple
-	int i;
-	
-	Walls[0].startX = 1000;
-	Walls[0].startY = 0;
-	Walls[0].endX = 1000;
-	Walls[0].endY = 5000;
+  int i;
+  
+  Walls[0].startX = 1000;
+  Walls[0].startY = 0;
+  Walls[0].endX = 1000;
+  Walls[0].endY = 5000;
 
-	Walls[1].startX = 4000;
-	Walls[1].startY = 2000;
-	Walls[1].endX = 0;
-	Walls[1].endY = 2000;	
+  Walls[1].startX = 4000;
+  Walls[1].startY = 2000;
+  Walls[1].endX = 0;
+  Walls[1].endY = 2000;  
 
-	Environment.numWalls = NUM_WALLS;
-	Environment.walls = Walls;	
-	Environment.finishLineY = 2000;	
-	
-	for (i = 0; i < NUM_SENSORS; i++) {
-		Sensors[i].type = S_TEST;
-		Sensors[i].val = 0;
-		Sensors[i].dir = 45; // relative to car direction
-	}
-	
-	Car.numSensors = NUM_SENSORS;
-	Car.sensors = Sensors;
+  Environment.numWalls = NUM_WALLS;
+  Environment.walls = Walls;  
+  Environment.finishLineY = 2000;  
+  
+  for (i = 0; i < NUM_SENSORS; i++) {
+    Sensors[i].type = S_TEST;
+    Sensors[i].val = 0;
+    Sensors[i].dir = 45; // relative to car direction
+  }
+  
+  Car.numSensors = NUM_SENSORS;
+  Car.sensors = Sensors;
 
-	// Start car in the middle of the two walls, no velocity, facing north.
-	Car.x = 2000;
-	Car.y = 0;
-	Car.vel = 0;
-	Car.dir = 90;
+  // Start car in the middle of the two walls, no velocity, facing north.
+  Car.x = 2000;
+  Car.y = 0;
+  Car.vel = 0;
+  Car.dir = 90;
 }
 
 void endSim(char * message) {
-	OS_RemovePeriodicThread();
-	terminal_printString("\r\n");
-	SimLogger_PrintToTerminal();
-	terminal_printString("\r\n");
-	terminal_printString(message);
-	terminal_printString("\r\n");
-	terminal_printString("Test complete.\r\n\r\n");
+  OS_RemovePeriodicThread();
+  terminal_printString("\r\n");
+  SimLogger_PrintToTerminal();
+  terminal_printString("\r\n");
+  terminal_printString(message);
+  terminal_printString("\r\n");
+  terminal_printString("Test complete.\r\n\r\n");
 }

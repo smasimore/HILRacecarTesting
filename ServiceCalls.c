@@ -1,8 +1,7 @@
 /********** ServiceCalls.h ************** 
-Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
-Lab Number: 16000
-Created Date: 02/09/2018
-Last Updated Date: 02/28/2018
+* Authors: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
+* Created Date: 02/09/2018
+* Last Updated Date: 02/28/2018
 Description: Handles service calls (those which are written in C)
 	Note that some service calls are in assembly, and are located in OSasm.s
 */

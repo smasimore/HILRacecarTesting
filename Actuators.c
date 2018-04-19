@@ -15,6 +15,22 @@
  */
 void Actuators_Init(void) {
 	 // Init adc and channels (?)
+	
+	// motor
+	// MOTOR_SETDUTY, other MOTOR_* funcs change mode
+		// PWM0_0_CMPA_R and PWM0_1_CMPA_R (should be same.. assume same)
+	// DIR: 
+		// on fwd, PB7 = 0x80 PB4 = 0x10; 
+		// on reverse, PB6 = 0x40, PB5 = 0x20
+	
+	// servo
+	// do measurement with robot and map
+	/*
+	This is duty relative to 25000 period
+	#define SERVOMAX 2600 --> 30 degrees to the left
+#define SERVOMID 1975
+#define SERVOMIN 1375 --> 30 degrees to the right
+	*/
 }
 
 /**

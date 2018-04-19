@@ -1,7 +1,7 @@
 /********** terminal.c ************** 
-Name: Sarah Masimore and Zachary Susskind 
-Created Date: 01/22/2018
-Last Updated Date: 02/20/2018
+* Authors: Sarah Masimore and Zachary Susskind 
+* Created Date: 01/22/2018
+* Last Updated Date: 02/20/2018
 Description: Implements interfacing with CLI via UART. See "Command Reference.txt" for command format details.
 */
 

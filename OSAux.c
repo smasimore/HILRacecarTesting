@@ -1,8 +1,7 @@
 /********** OSAux.c ************** 
- Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
- Lab Number: 16000
- Created Date: 02/15/2018
- Last Updated Date: 02/28/2018
+ * Authors: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
+ * Created Date: 02/15/2018
+ * Last Updated Date: 02/28/2018
  Description: Handles suppemental OS functions
 	These should not be called by a process
 */

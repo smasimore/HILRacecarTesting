@@ -1,11 +1,10 @@
 /********** UnitConvert.c ************** 
-Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
-Lab Number: 16000
-Created Date: 02/09/2018
-Last Updated Date: 02/19/2018
-Description: Provides helper functions to convert between time units;
-	namely, SI, clock cycles, and time slices
-*/
+ * Authors: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
+ * Created Date: 02/09/2018
+ * Last Updated Date: 02/19/2018
+ * Description: Provides helper functions to convert between time units;
+ * namely, SI, clock cycles, and time slices
+ */
 
 #include "stdint.h"
 

@@ -1,10 +1,9 @@
-/********** OS.h ************** 
- Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
- Lab Number: 16000
- Created Date: 01/24/2018
- Last Updated Date: 01/31/2018
- Description: API to initialize periodic timer. Uses Timer5.
-*/
+/**
+ * File: OS.h
+ * Authors: Sarah Masimore and Zachary Susskind
+ * Last Updated Date: 02/19/2018
+ * Description: API to for OS implementation.
+ */
 
 #ifndef OS_H
 #define OS_H
@@ -25,7 +24,7 @@
 #include <stdint.h>
 #include "ErrorCodes.h"
 
-// TCB
+// Thread Control Block
 typedef struct TCB_t {
   uint32_t * stackPointer;
   struct TCB_t * prevTCB;
@@ -35,11 +34,9 @@ typedef struct TCB_t {
   uint8_t priority;
 } TCB_t;
 
-// feel free to change the type of semaphore, there are lots of good solutions
 struct  Sema4{
-  long Value;   // >0 means free, otherwise means busy  
-	TCB_t * Queue;
-// add other components here, if necessary to implement blocking
+  long Value;
+  TCB_t * Queue;
 };
 typedef struct Sema4 Sema4Type;
 

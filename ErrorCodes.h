@@ -1,8 +1,7 @@
 /********** ErrorCodes.h ************** 
-Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
-Lab Number: 16000
-Created Date: 01/21/2018
-Last Updated Date: 01/27/2018
+* Authors: Sarah Masimore and Zachary Susskind
+* Created Date: 01/21/2018
+* Last Updated Date: 01/27/2018
 Description: Error code constants for RTOS.
 */
 

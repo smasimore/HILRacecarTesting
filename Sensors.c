@@ -312,11 +312,34 @@ void Sensors_UpdateOutput(struct car * car) {
  */
 uint16_t getDutyFromIRSensorVal(uint32_t val) {
 	// todo
+	
+	/*
+int IR_Calculate(short ADCvalue){
+	int index = findIndex(ADCvalue);
+	if (index == -1) return 0; //return 0 cm if adc value is undefined
+	int slope = (IR_CM[index - 1] - IR_CM[index]) * 1000 / (IR_ADC[index - 1] - IR_ADC[index]);
+	return (slope * (ADCvalue - IR_ADC[index]) + IR_CM[index] * 1000) / 100;
+}
+*/
+	
 	return 500; // 50.0%
 }
 
 uint32_t getPeriodFromPingSensorVal(uint32_t val) {
 	// todo
+/*
+	
+uint32_t time2dist(uint32_t time){
+	uint32_t mmDistance;
+	uint64_t cyclesDistance;
+	if (time == 0) return 0;	// error state passed as input
+	cyclesDistance = time;
+	cyclesDistance *= MACH_MM_PER_SECOND;
+	mmDistance = cyclesDistance / 160000000;
+	if (mmDistance > 1500) return 0;	// above max sensor range! - reading was almost certainly incorrect
+	return mmDistance;
+}
+*/
 	return 8000;
 }
 

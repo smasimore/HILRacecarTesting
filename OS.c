@@ -1,11 +1,9 @@
-/********** OS.c ************** 
- Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
- Lab Number: 16000
- Created Date: 01/24/2018
- Last Updated Date: 02/19/2018
- Description: API to initialize periodic timer. Uses Timer5.
-  Init code based on ValvanoWare starter files.
-*/
+/**
+ * File: OS.c
+ * Authors: Sarah Masimore and Zachary Susskind
+ * Last Updated Date: 02/19/2018
+ * Description: API to for OS implementation.
+ */
 
 #include <stdint.h>
 #include <limits.h>

@@ -1,11 +1,11 @@
-/********** ADC.c ************** 
- Name: Sarah Masimore (sm66498) and Zachary Susskind (zjs362)
- Lab Number: 16000
- Created Date: 01/21/2018
- Last Updated Date: 01/31/2018
- Description: API to initialize and sample ADC one time or using timer. Uses
-  ADC0, ADC Seq 3, and Timer2. Code based on ADCSWTrigger.c and ADCT0ATrigger.c.
-*/
+/**
+ * File: ADC.c
+ * Authors: Sarah Masimore and Zachary Susskind
+ * Last Updated Date: 01/31/2018
+ * Description: API to initialize and sample ADC one time or using timer. Uses
+ *              ADC0, ADC Seq 3, and Timer2. Code based on ADCSWTrigger.c and 
+ *              ADCT0ATrigger.c.
+ */
 
 #include "tm4c123gh6pm.h"
 #include "ADC.h"
