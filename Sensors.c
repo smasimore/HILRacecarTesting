@@ -26,8 +26,7 @@ void Sensors_Init(struct car * car) {
 	for (i = 0; i < numSensors; i++) {
 		sensor = &car->sensors[i];
 		switch (sensor->type) {
-			case S_TEST:
-			case S_PING:
+			case S_US:
 				USSensor_Init(sensor);
 				break;
 			case S_IR:
@@ -53,8 +52,7 @@ void Sensors_UpdateOutput(struct car * car) {
 			case S_IR:
 				IRSensor_UpdateOutput(sensor);
 				break;
-			case S_TEST:
-			case S_PING:
+			case S_US:
 				USSensor_UpdateOutput(sensor);
 				break;
 			default:

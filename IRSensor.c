@@ -10,7 +10,7 @@
 #include "terminal.h"
 #include "IRSensorLookup.h"
  
-#define NUM_PWM_CHANNELS 6
+#define NUM_IR_CHANNELS 6
 #define PWM_PERIOD 8000 // 1000 Hz
 #define CALIBRATION_SIZE 22
 
@@ -44,12 +44,12 @@ void IRSensor_Init(struct sensor * sensor) {
   volatile unsigned long delay;
 	static uint8_t nextIRChannel = 0;
 	
-	if (nextIRChannel == NUM_PWM_CHANNELS) {
+	if (nextIRChannel == NUM_IR_CHANNELS) {
 		terminal_printString("Error: Unsupported number of PWM channels\r\n");
 		return;
 	}
 
-	// Initialize pin based on next available PWM channel.
+	// Initialize pin based on next available IR channel.
 	switch (nextIRChannel) {
 		case 0:
 			// Initialize PWM0 and Port B
@@ -224,7 +224,7 @@ static void setChannelDuty(uint8_t channel, uint16_t duty) {
 		return;
 	}
 	
-	if (channel >= NUM_PWM_CHANNELS) {
+	if (channel >= NUM_IR_CHANNELS) {
 		terminal_printString("Error: PWM channel not supported \r\n");
 		return;
 	}

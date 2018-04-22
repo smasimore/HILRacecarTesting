@@ -64,8 +64,7 @@ uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX,
 			return 1;
 		}
 	}
-
-														
+												
   return 0;
 }
 

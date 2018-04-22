@@ -172,10 +172,16 @@ void initObjects(void) { // initObjectsSimple
   Environment.walls = Walls;  
   Environment.finishLineY = 2000;  
   
-  for (i = 0; i < NUM_SENSORS; i++) {
+  for (i = 0; i < 2; i++) {
+    Sensors[i].type = S_US;
+    Sensors[i].val = 0;
+    Sensors[i].dir = 0; // relative to car direction
+  }
+	
+  for (i = 3; i < NUM_SENSORS; i++) {
     Sensors[i].type = S_IR;
     Sensors[i].val = 0;
-    Sensors[i].dir = 90; // relative to car direction
+    Sensors[i].dir = 0; // relative to car direction
   }
   
   Car.numSensors = NUM_SENSORS;

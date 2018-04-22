@@ -318,6 +318,6 @@ void terminal_printString(char * msg){
 
 #endif
 
-void HardFault_Handler(void){ // needs to be fixed!
+void HardFault_Handler(void){
   while(1);
 }

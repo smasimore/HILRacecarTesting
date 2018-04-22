@@ -27,8 +27,7 @@
  * voltage the sensor should output to the car.
  */
 enum sensor_type {
-	S_TEST,
-	S_PING,
+	S_US,
 	S_IR,
 };
 
