@@ -2,10 +2,8 @@
  * File: Sensors.c
  * Author: Sarah Masimore
  * Last Updated Date: 03/14/2018
- * Description: Manages init'ing sensor ports and pins, mapping environment
- * 							output to voltage out on pin to racecar. Uses Ports B and C.
+ * Description: Manages init'ing and updating sensors.
  */
-
  
 #include "Simulator.h"
  

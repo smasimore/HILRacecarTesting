@@ -10,11 +10,17 @@
 #include "Simulator.h"
 #include "Actuators.h"
 
+#define MAX_VELOCITY 1114 // mm/s, measured car's velocity at max pwm
+#define ADC_VALS 4096 // # of adc values
+
+int16_t getVelocityFromADCVal(uint16_t adc_val, uint8_t forward);
+uint16_t getDirectionFromADCVal(uint16_t adc_val);
+
 /**
  * Init ports and relevant pins for velocity and direction actuators.
  */
 void Actuators_Init(void) {
-	 // Init adc and channels (?)
+	// Init adc and channels for pwm, direction of motor, and servo
 	
 	// motor
 	// MOTOR_SETDUTY, other MOTOR_* funcs change mode
@@ -30,6 +36,7 @@ void Actuators_Init(void) {
 	#define SERVOMAX 2600 --> 30 degrees to the left
 #define SERVOMID 1975
 #define SERVOMIN 1375 --> 30 degrees to the right
+	
 	*/
 }
 
@@ -40,4 +47,21 @@ void Actuators_UpdateVelocityAndDirection(struct car * car) {
 	// Get pin values
 	// Map based on actuator type
 	// Store to car
+}
+
+/**
+ * Determine velocity from adc value. If going backwards, return the negative 
+ * vel.
+ */
+int16_t getVelocityFromADCVal(uint16_t adc_val, uint8_t forward) {
+	int16_t vel = adc_val * MAX_VELOCITY * (ADC_VALS - 1);
+	return forward ? vel : -1 * vel;
+}
+
+/**
+ * Determine car's direction based on servo ADC value.
+ */
+uint16_t getDirectionFromADCVal(uint16_t adc_val) {
+	// todo
+	return 0;
 }

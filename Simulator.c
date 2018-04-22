@@ -47,10 +47,25 @@ void Simulator_MoveCar(struct car * car, uint32_t simFreq) {
 /**
  * Based on previous and next location, determine if hit wall.
  */
-uint8_t Simulator_HitWall(uint32_t prevX, uint32_t prevY, 
-                          uint32_t nextX, uint32_t nextY) {
-  
+uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX, 
+	                        uint32_t prevY, uint32_t nextX, uint32_t nextY) {
+  // todo untested
 
+	int j;
+	struct wall * wall;
+														
+	for (j = 0; j < env->numWalls; j++) {
+		wall = &env->walls[j];
+		
+		// If segments intersect, calculate distance and maybe update minDistance.
+		if (getSegmentIntersection(prevX, prevY, nextX, nextY, wall->startX, 
+															 wall->startY, wall->endX, wall->endY, 
+															 0, 0)) {
+			return 1;
+		}
+	}
+
+														
   return 0;
 }
 
@@ -87,7 +102,7 @@ void Simulator_UpdateSensors(struct car * car, struct environment * env) {
     endX = car->x + CosLookup[absDir]*MAX_SENSOR_LINE_OF_SIGHT/TRIG_SCALE;
 
     // Set minDistance to max int32
-    minDistance = ~MAX_U32INT;
+    minDistance = MAX_U32INT;
     wallInSight = 0;
     for (j = 0; j < env->numWalls; j++) {
       wall = &env->walls[j];

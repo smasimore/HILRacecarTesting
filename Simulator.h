@@ -85,8 +85,8 @@ void Simulator_MoveCar(struct car * car, uint32_t simFreq);
 /**
  * Based on previous and next location, determine if hit wall.
  */
-uint8_t Simulator_HitWall(uint32_t prevX, uint32_t prevY, 
-													uint32_t nextX, uint32_t nextY);
+uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX, 
+	                        uint32_t prevY, uint32_t nextX, uint32_t nextY);
 
 /**
  * Update sensor values relative to environment. For each sensor, based on 

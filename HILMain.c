@@ -100,7 +100,7 @@ void simThread(void) {
   Simulator_MoveCar(&Car, SIM_FREQ);
   
   // Check if hit wall.
-  if (Simulator_HitWall(prevX, prevY, Car.x, Car.y)) {
+  if (Simulator_HitWall(&Environment, prevX, prevY, Car.x, Car.y)) {
     endSim("Car crashed into wall!");
   }
   
@@ -163,26 +163,26 @@ void initObjects(void) { // initObjectsSimple
   Walls[0].endX = 1000;
   Walls[0].endY = 5000;
 
-  Walls[1].startX = 4000;
-  Walls[1].startY = 2000;
-  Walls[1].endX = 0;
-  Walls[1].endY = 2000;  
+  Walls[1].startX = 2000;
+  Walls[1].startY = 0;
+  Walls[1].endX = 2000;
+  Walls[1].endY = 5000;  
 
   Environment.numWalls = NUM_WALLS;
   Environment.walls = Walls;  
   Environment.finishLineY = 2000;  
   
   for (i = 0; i < NUM_SENSORS; i++) {
-    Sensors[i].type = S_TEST;
+    Sensors[i].type = S_IR;
     Sensors[i].val = 0;
-    Sensors[i].dir = 45; // relative to car direction
+    Sensors[i].dir = 90; // relative to car direction
   }
   
   Car.numSensors = NUM_SENSORS;
   Car.sensors = Sensors;
 
   // Start car in the middle of the two walls, no velocity, facing north.
-  Car.x = 2000;
+  Car.x = 1500;
   Car.y = 0;
   Car.vel = 0;
   Car.dir = 90;
