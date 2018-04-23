@@ -91,7 +91,7 @@ void USSensor_Init(struct sensor * sensor) {
 			GPIO_PORTA_ICR_R = 0x10; // Clear flag
 			
 			// Initialize timer to interrupt and send Ping response
-			SYSCTL_RCGCTIMER_R |= 0x2; // Activate timer0
+			SYSCTL_RCGCTIMER_R |= 0x2; // Activate timer1
 			TIMER1_CTL_R = 0; // Disable until receive pulse from racecar
 			TIMER1_CFG_R = 0; // Configure for 32-bit timer mode (uses A and B)
 			TIMER1_TAMR_R = 0x1; // Configure for one-shot mode, default down-count settings
@@ -106,10 +106,10 @@ void USSensor_Init(struct sensor * sensor) {
 
 		// PA5, TIMER2
 		case 2:
-			GPIO_PORTA_AFSEL_R &= ~0x20; // Disable alternate function for PA5
-			GPIO_PORTA_PCTL_R &= ~0xF00000; // Clear PA5 (GPIO)
-			GPIO_PORTA_AMSEL_R &= ~0x20; // Disable analog functionality on PA5
-			GPIO_PORTA_DEN_R |= 0x20; // Enable digital I/O on PA5
+			GPIO_PORTA_AFSEL_R &= ~0x60; // Disable alternate function for PA5
+			GPIO_PORTA_PCTL_R &= ~0xFF00000; // Clear PA5 (GPIO)
+			GPIO_PORTA_AMSEL_R &= ~0xA0; // Disable analog functionality on PA5
+			GPIO_PORTA_DEN_R |= 0xA0; // Enable digital I/O on PA5
 			GPIO_PORTA_DIR_R &= ~0x20; // Start PA5 as in 
 			GPIO_PORTA_PDR_R |= 0x20; // Pull down register
 			
@@ -119,7 +119,7 @@ void USSensor_Init(struct sensor * sensor) {
 			GPIO_PORTA_IEV_R |= 0x20; // PA5 rising edge event
 			GPIO_PORTA_IM_R |= 0x20; // Arm interrupt
 			GPIO_PORTA_ICR_R = 0x20; // Clear flag
-			
+		
 			// Initialize timer to interrupt and send Ping response
 			SYSCTL_RCGCTIMER_R |= 0x4; // Activate timer2
 			TIMER2_CTL_R = 0; // Disable until receive pulse from racecar

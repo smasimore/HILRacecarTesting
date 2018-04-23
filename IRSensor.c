@@ -11,15 +11,7 @@
 #include "IRSensorLookup.h"
  
 #define NUM_IR_CHANNELS 6
-#define PWM_PERIOD 8000 // 1000 Hz
-#define CALIBRATION_SIZE 22
-
-// Calibration constants used for linear interpolation.
-const uint16_t IR_ADC[CALIBRATION_SIZE] = {3800, 3450, 3000, 2800, 2580, 2399, 
-1986, 1800, 1575, 1430, 1320, 1225, 1096, 1000, 925, 875, 825, 800, 750, 708, 
-685, 620};
-const uint16_t IR_CM[CALIBRATION_SIZE] = {7, 8, 9, 10, 11, 12, 15, 17, 20, 22, 
-25, 27, 30, 34, 38, 40, 42, 45, 48, 51, 55, 61};
+#define PWM_PERIOD 40960
  
 static uint16_t getDutyFromSensorVal(uint32_t val);
 static void setChannelDuty(uint8_t channel, uint16_t duty);

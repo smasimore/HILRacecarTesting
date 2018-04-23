@@ -139,16 +139,25 @@ uint8_t getSegmentIntersection(int32_t s0_x, int32_t s0_y, int32_t s1_x,
                                int32_t *i_y)
 {
   int32_t x_intrs, y_intrs;
+	
   // Scaled up 1000x for fixed point math
   int32_t sensorSlope = (s1_y - s0_y) * 1000 / (s1_x - s0_x);
   int32_t sensorYIntersect = s0_y - sensorSlope * s0_x / 1000;
-  
-  
+	uint8_t isVerticalSensor = (s1_x - s0_x) == 0;
   
   // Horizontal wall
   if (w0_y == w1_y) {
     // Check if wall y is within sensor's y's
     if ((w0_y >= s0_y && w0_y <= s1_y) || (w0_y >= s1_y && w0_y <= s0_y)) {
+			// Handle vertical line
+			if (isVerticalSensor) {
+				if ((s0_x <= w0_x && s0_x >= w1_x) || (s0_x >= w0_x && s0_x <= w1_x)) {
+					*i_x = s0_x;
+					*i_y = w0_y;
+					return 1;
+				}
+			}
+			
       // Get sensor's x when at w0_y
       x_intrs = (w0_y - sensorYIntersect) * 1000 / sensorSlope;
       

@@ -17,6 +17,9 @@
 
 #define MAX_SENSOR_LINE_OF_SIGHT 10000 // 10 meters
 #define MAX_U32INT 1U << 31
+#define MIN_32INT 1 << 31
+#define MAX_32INT ~(1 << 31)
+
 
 
 // STRUCTS
@@ -48,7 +51,7 @@ struct car {
 	
 	// Velocity and direction. If top of environment is north, dir = 0 --> car 
 	// pointing east, dir = 90 --> car pointing north.
-	uint32_t vel; // mm/s
+	int32_t vel; // mm/s, negative if going backwards
   uint32_t dir; // direction relative to environment bottom boundary, degrees, 
 	              // 0 - 360
 	

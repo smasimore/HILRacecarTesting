@@ -1,7 +1,7 @@
 /**
  * File: HILMain.c
  * Author: Sarah Masimore
- * Last Updated Date: 04/07/2018
+ * Last Updated Date: 04/22/2018
  * Description: Controller managing simulator, actuators, sensors, and timer 
  *              interrupt for racecar HIL testing.
  */
@@ -17,8 +17,8 @@
 #include "OS.h"
 #include "terminal.h"
 
-#define NUM_SENSORS 6
-#define NUM_WALLS 2
+#define NUM_SENSORS 7
+#define NUM_WALLS 6
 
 struct car Car;
 struct environment Environment;
@@ -27,13 +27,12 @@ struct wall Walls[NUM_WALLS];
 
 uint32_t NumSimTicks = 0;
 
-void initObjects(void);
-void initSystick(void);
-void addSimFGThread(void);
-void simThread(void);
-void terminal(void);
-void idle(void);
-void endSim(char * message);
+static void initObjects(void);
+static void addSimFGThread(void);
+static void simThread(void);
+static void terminal(void);
+static void idle(void);
+static void endSim(char * message);
 
 int main(void){
   OS_Init();
@@ -67,7 +66,7 @@ int main(void){
  * b) if it fills up the UART buffer, it will hang because the UART interrupt 
  * won't be able to run to clear the buffer (simThread will hang).
  */
-void addSimFGThread(void) {
+static void addSimFGThread(void) {
   OS_AddThread(&simThread, 128, 1); // 10 hz, higher priority than terminal
 }
 
@@ -84,7 +83,7 @@ void addSimFGThread(void) {
  * 4) Update sensor values.
  * 5) Increment NumSimTicks.
  */
-void simThread(void) {
+static void simThread(void) {
   // Store car's previous x,y to later check if hit a wall.
   uint32_t prevX = Car.x;
   uint32_t prevY = Car.y;
@@ -126,7 +125,7 @@ void simThread(void) {
 /**
  * Terminal foreground thread.
  */
-void terminal(void) {
+static void terminal(void) {
   while(1) {
     terminal_ReadAndParse();
   }
@@ -135,7 +134,7 @@ void terminal(void) {
 /**
  * Idle foreground thread.
  */
-void idle(void) {
+static void idle(void) {
   while(1) {}
 }
 
@@ -155,9 +154,112 @@ void idle(void) {
  * C.v = 0, C.dir = 90
  * 
  */
-void initObjects(void) { // initObjectsSimple
-  int i;
+static void initObjects(void) { // initObjectsSimple
+  Walls[0].startX = 1000;
+  Walls[0].startY = 0;
+  Walls[0].endX = 1000;
+  Walls[0].endY = 1500;
+
+  Walls[1].startX = 2000;
+  Walls[1].startY = 0;
+  Walls[1].endX = 2000;
+  Walls[1].endY = 500;  
+
+  Walls[2].startX = 1000;
+  Walls[2].startY = 1500;
+  Walls[2].endX = 2000;
+  Walls[2].endY = 1500;
+
+  Walls[3].startX = 2000;
+  Walls[3].startY = 500;
+  Walls[3].endX = 3000;
+  Walls[3].endY = 500;  
+	
+  Walls[4].startX = 2000;
+  Walls[4].startY = 1500;
+  Walls[4].endX = 2000;
+  Walls[4].endY = 5000;
+
+  Walls[5].startX = 3000;
+  Walls[5].startY = 500;
+  Walls[5].endX = 3000;
+  Walls[5].endY = 5000;  
+	
+  Environment.numWalls = NUM_WALLS;
+  Environment.walls = Walls;  
+  Environment.finishLineY = 2000;  
   
+	// Front left
+	Sensors[0].type = S_US;
+	Sensors[0].val = 0;
+	Sensors[0].dir = 30;
+
+  // Front center
+	Sensors[1].type = S_US;
+	Sensors[1].val = 0;
+	Sensors[1].dir = 0;
+
+  // Front right
+	Sensors[2].type = S_US;
+	Sensors[2].val = 0;
+	Sensors[2].dir = 330;
+
+  // Front left
+	Sensors[3].type = S_IR;
+	Sensors[3].val = 0;
+	Sensors[3].dir = 45;
+
+  // Side left
+	Sensors[4].type = S_IR;
+	Sensors[4].val = 0;
+	Sensors[4].dir = 135;
+
+  // Side right
+	Sensors[5].type = S_IR;
+	Sensors[5].val = 0;
+	Sensors[5].dir = 225;
+
+  // Front right
+	Sensors[6].type = S_IR;
+	Sensors[6].val = 0;
+	Sensors[6].dir = 315;
+
+  Car.numSensors = NUM_SENSORS;
+  Car.sensors = Sensors;
+
+  // Start car in the middle of the two walls, no velocity, facing north.
+  Car.x = 1500;
+  Car.y = 0;
+  Car.vel = 1000; // 1000 mm/s
+  Car.dir = 90;
+}
+
+static void endSim(char * message) {
+  OS_RemovePeriodicThread();
+  terminal_printString("\r\n");
+  SimLogger_PrintToTerminal();
+  terminal_printString("\r\n");
+  terminal_printString(message);
+  terminal_printString("\r\n");
+  terminal_printString("Test complete.\r\n\r\n");
+}
+
+/* 
+
+TEST ENVIRONMENTS
+
+ *        _______ <-- finish line
+ *       |       |
+ *       |       |
+ *       |       |
+ *       |       |
+ *       |       |
+ *       |       |
+ *       |   C   |
+ *        -------
+
+  STRAIGHT
+
   Walls[0].startX = 1000;
   Walls[0].startY = 0;
   Walls[0].endX = 1000;
@@ -168,38 +270,4 @@ void initObjects(void) { // initObjectsSimple
   Walls[1].endX = 2000;
   Walls[1].endY = 5000;  
 
-  Environment.numWalls = NUM_WALLS;
-  Environment.walls = Walls;  
-  Environment.finishLineY = 2000;  
-  
-  for (i = 0; i < 2; i++) {
-    Sensors[i].type = S_US;
-    Sensors[i].val = 0;
-    Sensors[i].dir = 0; // relative to car direction
-  }
-	
-  for (i = 3; i < NUM_SENSORS; i++) {
-    Sensors[i].type = S_IR;
-    Sensors[i].val = 0;
-    Sensors[i].dir = 0; // relative to car direction
-  }
-  
-  Car.numSensors = NUM_SENSORS;
-  Car.sensors = Sensors;
-
-  // Start car in the middle of the two walls, no velocity, facing north.
-  Car.x = 1500;
-  Car.y = 0;
-  Car.vel = 0;
-  Car.dir = 90;
-}
-
-void endSim(char * message) {
-  OS_RemovePeriodicThread();
-  terminal_printString("\r\n");
-  SimLogger_PrintToTerminal();
-  terminal_printString("\r\n");
-  terminal_printString(message);
-  terminal_printString("\r\n");
-  terminal_printString("Test complete.\r\n\r\n");
-}
+*/
