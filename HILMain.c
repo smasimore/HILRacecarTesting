@@ -174,7 +174,7 @@ static void initObjects(void) { // initObjectsSimple
   Walls[3].startY = 500;
   Walls[3].endX = 3000;
   Walls[3].endY = 500;  
-	
+  
   Walls[4].startX = 2000;
   Walls[4].startY = 1500;
   Walls[4].endX = 2000;
@@ -184,45 +184,45 @@ static void initObjects(void) { // initObjectsSimple
   Walls[5].startY = 500;
   Walls[5].endX = 3000;
   Walls[5].endY = 5000;  
-	
+  
   Environment.numWalls = NUM_WALLS;
   Environment.walls = Walls;  
   Environment.finishLineY = 2000;  
   
-	// Front left
-	Sensors[0].type = S_US;
-	Sensors[0].val = 0;
-	Sensors[0].dir = 30;
+  // Front left
+  Sensors[0].type = S_US;
+  Sensors[0].val = 0;
+  Sensors[0].dir = 30;
 
   // Front center
-	Sensors[1].type = S_US;
-	Sensors[1].val = 0;
-	Sensors[1].dir = 0;
+  Sensors[1].type = S_US;
+  Sensors[1].val = 0;
+  Sensors[1].dir = 0;
 
   // Front right
-	Sensors[2].type = S_US;
-	Sensors[2].val = 0;
-	Sensors[2].dir = 330;
+  Sensors[2].type = S_US;
+  Sensors[2].val = 0;
+  Sensors[2].dir = 330;
 
   // Front left
-	Sensors[3].type = S_IR;
-	Sensors[3].val = 0;
-	Sensors[3].dir = 45;
+  Sensors[3].type = S_IR;
+  Sensors[3].val = 0;
+  Sensors[3].dir = 45;
 
   // Side left
-	Sensors[4].type = S_IR;
-	Sensors[4].val = 0;
-	Sensors[4].dir = 135;
+  Sensors[4].type = S_IR;
+  Sensors[4].val = 0;
+  Sensors[4].dir = 135;
 
   // Side right
-	Sensors[5].type = S_IR;
-	Sensors[5].val = 0;
-	Sensors[5].dir = 225;
+  Sensors[5].type = S_IR;
+  Sensors[5].val = 0;
+  Sensors[5].dir = 225;
 
   // Front right
-	Sensors[6].type = S_IR;
-	Sensors[6].val = 0;
-	Sensors[6].dir = 315;
+  Sensors[6].type = S_IR;
+  Sensors[6].val = 0;
+  Sensors[6].dir = 315;
 
   Car.numSensors = NUM_SENSORS;
   Car.sensors = Sensors;

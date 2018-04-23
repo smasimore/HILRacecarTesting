@@ -48,23 +48,23 @@ void Simulator_MoveCar(struct car * car, uint32_t simFreq) {
  * Based on previous and next location, determine if hit wall.
  */
 uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX, 
-	                        uint32_t prevY, uint32_t nextX, uint32_t nextY) {
+                          uint32_t prevY, uint32_t nextX, uint32_t nextY) {
   // todo untested
 
-	int j;
-	struct wall * wall;
-														
-	for (j = 0; j < env->numWalls; j++) {
-		wall = &env->walls[j];
-		
-		// If segments intersect, calculate distance and maybe update minDistance.
-		if (getSegmentIntersection(prevX, prevY, nextX, nextY, wall->startX, 
-															 wall->startY, wall->endX, wall->endY, 
-															 0, 0)) {
-			return 1;
-		}
-	}
-												
+  int j;
+  struct wall * wall;
+                            
+  for (j = 0; j < env->numWalls; j++) {
+    wall = &env->walls[j];
+    
+    // If segments intersect, calculate distance and maybe update minDistance.
+    if (getSegmentIntersection(prevX, prevY, nextX, nextY, wall->startX, 
+                               wall->startY, wall->endX, wall->endY, 
+                               0, 0)) {
+      return 1;
+    }
+  }
+                        
   return 0;
 }
 
@@ -139,25 +139,25 @@ uint8_t getSegmentIntersection(int32_t s0_x, int32_t s0_y, int32_t s1_x,
                                int32_t *i_y)
 {
   int32_t x_intrs, y_intrs;
-	
+  
   // Scaled up 1000x for fixed point math
   int32_t sensorSlope = (s1_y - s0_y) * 1000 / (s1_x - s0_x);
   int32_t sensorYIntersect = s0_y - sensorSlope * s0_x / 1000;
-	uint8_t isVerticalSensor = (s1_x - s0_x) == 0;
+  uint8_t isVerticalSensor = (s1_x - s0_x) == 0;
   
   // Horizontal wall
   if (w0_y == w1_y) {
     // Check if wall y is within sensor's y's
     if ((w0_y >= s0_y && w0_y <= s1_y) || (w0_y >= s1_y && w0_y <= s0_y)) {
-			// Handle vertical line
-			if (isVerticalSensor) {
-				if ((s0_x <= w0_x && s0_x >= w1_x) || (s0_x >= w0_x && s0_x <= w1_x)) {
-					*i_x = s0_x;
-					*i_y = w0_y;
-					return 1;
-				}
-			}
-			
+      // Handle vertical line
+      if (isVerticalSensor) {
+        if ((s0_x <= w0_x && s0_x >= w1_x) || (s0_x >= w0_x && s0_x <= w1_x)) {
+          *i_x = s0_x;
+          *i_y = w0_y;
+          return 1;
+        }
+      }
+      
       // Get sensor's x when at w0_y
       x_intrs = (w0_y - sensorYIntersect) * 1000 / sensorSlope;
       

@@ -1,10 +1,10 @@
-/**	
+/**  
  * File: Actuators.c
  * Author: Sarah Masimore
  * Last Updated Date: 03/14/2018
  * Description: Manages init'ing actuator ports and pins, mapping input voltage
- *							to environment variables (i.e. new velocity, direction of car).
- *							Uses PE0 --> AIN3 (velocity) and PE1 --> AIN2 (direction).
+ *              to environment variables (i.e. new velocity, direction of car).
+ *              Uses PE0 --> AIN3 (velocity) and PE1 --> AIN2 (direction).
  */
 
 #include "Simulator.h"
@@ -15,16 +15,16 @@
 #define MOCK_ACTUATORS
 
 #ifdef MOCK_ACTUATORS
-	extern uint32_t NumSimTicks;
-	uint32_t TestDir[30] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};	
+  extern uint32_t NumSimTicks;
+  uint32_t TestDir[30] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
 #endif
 
 /**
  * Init ports and relevant pins for velocity and direction actuators.
  */
 void Actuators_Init(void) {
-	MotorActuator_Init();
-	ServoActuator_Init();
+  MotorActuator_Init();
+  ServoActuator_Init();
 }
 
 /**
@@ -34,7 +34,7 @@ void Actuators_UpdateVelocityAndDirection(struct car * car) {
 #ifdef MOCK_ACTUATORS
   car->dir = TestDir[NumSimTicks];
 #else
-	car->vel = MotorActuator_GetVelocity();
-	car->dir = ServoActuator_GetDirection();
+  car->vel = MotorActuator_GetVelocity();
+  car->dir = ServoActuator_GetDirection();
 #endif
 }

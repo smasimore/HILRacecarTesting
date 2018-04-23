@@ -197,11 +197,11 @@ ErrorCode_t terminal_ReadAndParse(void){ ErrorCode_t error;
   if(*buffer == '\0') return E_SUCCESS;
   if((error = readStringLower(buffer, &bufferOffset, command)) != E_SUCCESS) return error;
   
-	// NO COMMANDS CURRENTLY SUPPORTED FOR THIS PROGRAM
-	
-	UART_OutString("\r\nERROR: Unknown command: ");
-	UART_OutString(command);
-	return E_INVALID_COMMAND;
+  // NO COMMANDS CURRENTLY SUPPORTED FOR THIS PROGRAM
+  
+  UART_OutString("\r\nERROR: Unknown command: ");
+  UART_OutString(command);
+  return E_INVALID_COMMAND;
 }
 
 /**************terminal_fatalErrorHandler***************
@@ -229,25 +229,25 @@ Description: Prints a string to the UART terminal, preceded by "INFO: ".
   The UART connection is initialized automatically, if it has not been initialized already.
 Inputs:
   message - Message to print to the terminal
-	severity - 0 to 3
+  severity - 0 to 3
 Outputs: None
 */
 void terminal_printMessage(char* message, uint8_t severity){
   #if TERMINAL_DEBUGGING
   if(!Initialized) terminal_init();
-	switch (severity){
-		case 0:
-			UART_OutString("\r\nINFO: ");
-			break;
-		case 1:
-			UART_OutString("\r\n-ADVISORY-: ");
-			break;
-		case 2:
-			UART_OutString("\r\n!-WARNING-!: ");
-			break;
-		default:
-			UART_OutString("\r\n!!!-CRITICAL WARNING-!!!: ");
-	}
+  switch (severity){
+    case 0:
+      UART_OutString("\r\nINFO: ");
+      break;
+    case 1:
+      UART_OutString("\r\n-ADVISORY-: ");
+      break;
+    case 2:
+      UART_OutString("\r\n!-WARNING-!: ");
+      break;
+    default:
+      UART_OutString("\r\n!!!-CRITICAL WARNING-!!!: ");
+  }
   UART_OutString(message);
   #endif
 }
@@ -257,24 +257,24 @@ Description: Prints a string to the UART terminal, preceded by "INFO: ".
   The UART connection is initialized automatically, if it has not been initialized already.
 Inputs:
   message - Message to print to the terminal
-	severity - 0 to 3
+  severity - 0 to 3
 Outputs: None
 */
 void terminal_printMessageNoDebugging(char* message, uint8_t severity){
   if(!Initialized) terminal_init();
-	switch (severity){
-		case 0:
-			UART_OutString("\r\nINFO: ");
-			break;
-		case 1:
-			UART_OutString("\r\n-ADVISORY-: ");
-			break;
-		case 2:
-			UART_OutString("\r\n!-WARNING-!: ");
-			break;
-		default:
-			UART_OutString("\r\n!!!-CRITICAL WARNING-!!!: ");
-	}
+  switch (severity){
+    case 0:
+      UART_OutString("\r\nINFO: ");
+      break;
+    case 1:
+      UART_OutString("\r\n-ADVISORY-: ");
+      break;
+    case 2:
+      UART_OutString("\r\n!-WARNING-!: ");
+      break;
+    default:
+      UART_OutString("\r\n!!!-CRITICAL WARNING-!!!: ");
+  }
   UART_OutString(message);
 }
 
