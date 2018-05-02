@@ -130,8 +130,6 @@ Description: Adds thread.
 Inputs: none
 Outputs: 1 if successful
 */
-
-// TODO: Have user code call this through a service call
 unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned long priority) {
   TCB_t* newTCB;
   uint8_t newTID, prevTID, nextTID;

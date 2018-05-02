@@ -10,14 +10,15 @@
 #include "terminal.h"
 #include "IRSensorLookup.h"
  
-#define NUM_IR_CHANNELS 6
-#define PWM_PERIOD 40960
+#define NUM_IR_CHANNELS 5
+#define PWM_PERIOD 4000 // 10 kHz since pwm has clock / 2
+#define CALIBRATION_AT_500MM 18
  
 static uint16_t getDutyFromSensorVal(uint32_t val);
 static void setChannelDuty(uint8_t channel, uint16_t duty);
 
  /**
- * Init PWM channel for a sensor. Currently supports up to 6 channels. PWM on
+ * Init PWM channel for a sensor. Currently supports up to 5 channels. PWM on
  * TM4C supports up to 8 different PWM outputs. Channel sensor assigned to 
  * added to sensor struct.
  *
@@ -26,10 +27,9 @@ static void setChannelDuty(uint8_t channel, uint16_t duty);
  *
  * Channel 0 --> PB6 --> M0PWM0
  * Channel 1 --> PC4 --> M0PWM6
- * Channel 2 --> PD0 --> M1PWM0
- * Channel 3 --> PF0 --> M1PWM4
- * Channel 4 --> PF2 --> M1PWM6
- * Channel 5 --> PE4 --> M1PWM2
+ * Channel 2 --> PF0 --> M1PWM4
+ * Channel 3 --> PF2 --> M1PWM6
+ * Channel 4 --> PE4 --> M1PWM2
  *
  */
 void IRSensor_Init(struct sensor * sensor) {
@@ -92,29 +92,8 @@ void IRSensor_Init(struct sensor * sensor) {
       break;
     
     case 2:
-      // Initialize PWM1 and Port D
+      // Initialize PWM1 and Port F
       SYSCTL_RCGCPWM_R |= 0x2;
-      SYSCTL_RCGCGPIO_R |= 0x8;
-      delay = SYSCTL_RCGCGPIO_R; // Noop to allow time to finish init'ing
-    
-      // PD0
-      GPIO_PORTD_AFSEL_R |= 0x1; // Enable alternate function for PB4
-      GPIO_PORTD_PCTL_R &= ~0xF; // Clear PD0
-      GPIO_PORTD_PCTL_R |= 0x5; // Configure PD0 as M1PWM0
-      GPIO_PORTD_AMSEL_R &= ~0x1; // Disable analog functionality on PD0
-      GPIO_PORTD_DEN_R |= 0x1; // Enable digital I/O on PD0
-    
-      // M1PWM0 maps to PWM1_0
-      PWM1_0_CTL_R = 0; // Re-loading down-counting mode
-      PWM1_0_GENA_R = (PWM_1_GENA_ACTCMPBD_ONE|PWM_1_GENA_ACTLOAD_ZERO);
-      PWM1_0_LOAD_R = PWM_PERIOD - 1; // Cycles to count down (goes low on load)
-      PWM1_0_CMPB_R = PWM_PERIOD / 2; // Count value when output rises
-      PWM1_0_CTL_R |= 0x00000001; // Start PWM1 0
-      PWM1_ENABLE_R |= 0x1; // Enable PD0/M1PWM0
-      break;
-    
-    case 3:
-      // Initialize Port F
       SYSCTL_RCGCGPIO_R |= 0x20;
       delay = SYSCTL_RCGCGPIO_R; // Noop to allow time to finish init'ing
       
@@ -138,7 +117,7 @@ void IRSensor_Init(struct sensor * sensor) {
       PWM1_ENABLE_R |= 0x10; // Enable PF0/M1PWM4 
       break;
     
-    case 4:
+    case 3:
       // PF2
       GPIO_PORTF_CR_R = 0x4; // Allow changes to PF2
       GPIO_PORTF_AFSEL_R |= 0x4; // Enable alternate function for PF2
@@ -156,7 +135,7 @@ void IRSensor_Init(struct sensor * sensor) {
       PWM1_ENABLE_R |= 0x40; // Enable PF2/M1PWM6 
       break;
 
-    case 5:
+    case 4:
       // Init Port E
       SYSCTL_RCGCGPIO_R |= 0x10;
       delay = SYSCTL_RCGCGPIO_R; // Noop to allow time to finish init'ing
@@ -197,12 +176,19 @@ void IRSensor_UpdateOutput(struct sensor * sensor) {
  * duty value to pass PWM. Duty is % time low (resolution .1%).
  */
 static uint16_t getDutyFromSensorVal(uint32_t val) {
+	uint16_t duty;
+	
   if (val < IR_MIN_MM || val > IR_MAX_MM) {
     return 0;
   }
+	
+	duty = IRMMToDuty[val - IR_MIN_MM];
+	
+	// Calibrate to account for test controller pwm inaccuracies. More accurate
+	// as target value increases, so reduce calibration value accordingly.
+	duty += CALIBRATION_AT_500MM * 500 / val;
   
-  // Mapping offset by IR_MIN_MM
-  return IRMMToDuty[val - IR_MIN_MM];
+  return duty;
 }
 
 /**
@@ -213,7 +199,7 @@ static void setChannelDuty(uint8_t channel, uint16_t duty) {
   
   if (duty > 1000) {
     terminal_printString("Error: Duty above max \r\n");
-    return;
+    duty = PWM_PERIOD - 2;
   }
   
   if (channel >= NUM_IR_CHANNELS) {
@@ -239,18 +225,14 @@ static void setChannelDuty(uint8_t channel, uint16_t duty) {
       break;
     
     case 2:
-      PWM1_0_CMPB_R = duty_ticks;
-      break;
-    
-    case 3:
       PWM1_2_CMPB_R = duty_ticks;
       break;
     
-    case 4:
+    case 3:
       PWM1_3_CMPB_R = duty_ticks;
       break;
     
-    case 5:
+    case 4:
       PWM1_1_CMPB_R = duty_ticks;
       break;
     

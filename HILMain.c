@@ -96,7 +96,7 @@ static void simThread(void) {
   SimLogger_LogRow(&Car, NumSimTicks);
     
   // Update car position based on current position, velocity, and direction.
-  Simulator_MoveCar(&Car, SIM_FREQ);
+  Simulator_MoveCar(&Car, MS_PER_SIM_TICK);
   
   // Check if hit wall.
   if (Simulator_HitWall(&Environment, prevX, prevY, Car.x, Car.y)) {
@@ -112,7 +112,7 @@ static void simThread(void) {
   // Update sensor vals and update voltages being outputted to car.
   Simulator_UpdateSensors(&Car, &Environment);
   Sensors_UpdateOutput(&Car);
-  
+	
   NumSimTicks++;
   
   if (NumSimTicks == MAX_NUM_TICKS) {
@@ -189,40 +189,40 @@ static void initObjects(void) { // initObjectsSimple
   Environment.walls = Walls;  
   Environment.finishLineY = 2000;  
   
-  // Front left
+  // Front center
   Sensors[0].type = S_US;
   Sensors[0].val = 0;
-  Sensors[0].dir = 30;
+  Sensors[0].dir = 0;
 
-  // Front center
+  // Mid left
   Sensors[1].type = S_US;
   Sensors[1].val = 0;
-  Sensors[1].dir = 0;
+  Sensors[1].dir = 90;
 
-  // Front right
+  // Mid right
   Sensors[2].type = S_US;
   Sensors[2].val = 0;
-  Sensors[2].dir = 330;
+  Sensors[2].dir = 270;
 
-  // Front left
+  // Front far left
   Sensors[3].type = S_IR;
   Sensors[3].val = 0;
-  Sensors[3].dir = 45;
+  Sensors[3].dir = 90;
 
-  // Side left
+  // Front far right
   Sensors[4].type = S_IR;
   Sensors[4].val = 0;
-  Sensors[4].dir = 135;
+  Sensors[4].dir = 270;
 
-  // Side right
+  // Front mid left
   Sensors[5].type = S_IR;
   Sensors[5].val = 0;
-  Sensors[5].dir = 225;
+  Sensors[5].dir = 15;
 
-  // Front right
+  // Front mid right
   Sensors[6].type = S_IR;
   Sensors[6].val = 0;
-  Sensors[6].dir = 315;
+  Sensors[6].dir = 345;
 
   Car.numSensors = NUM_SENSORS;
   Car.sensors = Sensors;

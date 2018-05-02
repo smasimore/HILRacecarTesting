@@ -18,14 +18,12 @@
 #define AIR_TMPTR_CELSIUS 23
 #define MACH_MM_PER_SECOND (331400 + 600 * AIR_TMPTR_CELSIUS)
 
-// todo, need 3
-uint32_t CurPingPeriod = 0;
+uint32_t CurPingPeriod[NUM_US_CHANNELS] = {0, 0, 0};
 
 static uint32_t getPeriodFromPingSensorVal(uint32_t val);
 
 /**
- * Currently only supports one Ping sensor on PA2 and Timer0.
- * TODO: make this work for one and then scale to 3
+* TODO: desc
  */ 
 void USSensor_Init(struct sensor * sensor) {
   volatile unsigned long delay;
@@ -142,19 +140,18 @@ void USSensor_Init(struct sensor * sensor) {
  * TODO: comment
  */
 void USSensor_UpdateOutput(struct sensor * sensor) {
-  CurPingPeriod = getPeriodFromPingSensorVal(sensor->val);
+  CurPingPeriod[sensor->channel] = getPeriodFromPingSensorVal(sensor->val);
 }
  
 /**
  * Calculates period in cycles to elapse before sending response.
  */
 static uint32_t getPeriodFromPingSensorVal(uint32_t val) {
-  return CLOCK_FREQ / MACH_MM_PER_SECOND * 500 * 2;
+  return CLOCK_FREQ / MACH_MM_PER_SECOND * val * 2;
 }
 
 /**
  * Triggered when get signal from racecar's Ping sensor pin.
- * Currently only supports PA2.
  */
 void GPIOPortA_Handler(void){
   // PA3
@@ -207,7 +204,7 @@ void Timer0A_Handler(void){
     
     // Reset timer with period required to represent distance to nearest wall
     TIMER0_CTL_R = 1;
-    TIMER0_TAILR_R = CurPingPeriod;
+    TIMER0_TAILR_R = CurPingPeriod[0];
     
     sendHigh = 0;
   } else {
@@ -244,7 +241,7 @@ void Timer1A_Handler(void){
     
     // Reset timer with period required to represent distance to nearest wall
     TIMER1_CTL_R = 1;
-    TIMER1_TAILR_R = CurPingPeriod;
+    TIMER1_TAILR_R = CurPingPeriod[1];
     
     sendHigh = 0;
   } else {
@@ -281,7 +278,7 @@ void Timer2A_Handler(void){
     
     // Reset timer with period required to represent distance to nearest wall
     TIMER2_CTL_R = 1;
-    TIMER2_TAILR_R = CurPingPeriod;
+    TIMER2_TAILR_R = CurPingPeriod[2];
     
     sendHigh = 0;
   } else {

@@ -12,7 +12,8 @@
 #include <stdint.h>
 
 #define CLOCK_FREQ 80000000 // 80 Mhz
-#define SIM_FREQ 10 // Hz
+#define SIM_FREQ 1 // Hz, how often state transitions occur
+#define MS_PER_SIM_TICK 100
 #define MAX_NUM_TICKS 100 // Keep this in sync with SimLogger MAX_ROWS
 
 #define MAX_SENSOR_LINE_OF_SIGHT 10000 // 10 meters
@@ -82,7 +83,7 @@ struct environment {
 /**
  * Based on velocity, direction, and sim_freq update car's position.
  */
-void Simulator_MoveCar(struct car * car, uint32_t simFreq);
+void Simulator_MoveCar(struct car * car, uint32_t timePassedMs);
 
 /**
  * Based on previous and next location, determine if hit wall.

@@ -21,12 +21,12 @@ int32_t getDistanceBetweenPoints(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
  * Don't need to worry about walls since that will be checked in 
  * Simulator_HitWall.
  */
-void Simulator_MoveCar(struct car * car, uint32_t simFreq) {
+void Simulator_MoveCar(struct car * car, uint32_t timePassedMs) {
   uint32_t vel = car->vel;
   uint32_t dir = car->dir;
   uint32_t x = car->x;
   uint32_t y = car->y;
-  uint32_t hyp = vel / SIM_FREQ; // get distance traveled (hypoteneuse)
+  uint32_t hyp = vel * timePassedMs / 1000; // get distance traveled (hypoteneuse)
   int32_t deltaX = CosLookup[dir]*(int32_t)hyp/TRIG_SCALE;
   int32_t deltaY = SinLookup[dir]*(int32_t)hyp/TRIG_SCALE;
 
@@ -49,8 +49,6 @@ void Simulator_MoveCar(struct car * car, uint32_t simFreq) {
  */
 uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX, 
                           uint32_t prevY, uint32_t nextX, uint32_t nextY) {
-  // todo untested
-
   int j;
   struct wall * wall;
                             
