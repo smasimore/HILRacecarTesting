@@ -89,7 +89,7 @@ struct live_data {
 	uint32_t y;
 	int32_t vel;
   uint32_t dir;
-	uint16_t servoAdc;
+	uint16_t servoDuty;
 };
 
 // FUNCTIONS

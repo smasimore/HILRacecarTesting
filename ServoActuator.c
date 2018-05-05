@@ -9,11 +9,12 @@
 #include "Simulator.h"
 #include "ADC.h"
 
-#define SERVO_MAX_DUTY 125 // Duty (res = tenth of %) --> 30 deg to left
-#define SERVO_MID_DUTY 75 // Duty --> 0 degrees
-#define SERVO_MIN_DUTY 26 // Duty --> 30 degrees to the right
-#define SERVO_MAX_DEG 30
-#define SERVO_MIN_DEG 330
+// Calibration constants for actuator pins directly into test controller w/o
+// hw actuators running in parallel.
+#define SERVO_MAX_DUTY 210 // Duty (res = tenth of %) --> 30 deg to left TUNE THIS POST RC UPDATE
+#define SERVO_MIN_DUTY 160 // Duty --> 30 degrees to the right TUNE THIS POST RC UPDATE
+#define SERVO_MAX_DEG 30 
+#define SERVO_MIN_DEG -30
 #define SERVO_ADC_CHANNEL 0 // PE3
 
 extern struct live_data LiveData;
@@ -33,6 +34,10 @@ void ServoActuator_Init(void) {
  */
 uint16_t ServoActuator_GetDirection(void) {
   uint16_t duty = getDuty();
+	
+	// Log duty value for debugging.
+	LiveData.servoDuty = duty;
+	
   return getDirectionFromDutyVal(duty);
 }
 
@@ -41,34 +46,28 @@ uint16_t ServoActuator_GetDirection(void) {
  */
 static uint16_t getDuty(void) {
 	uint16_t adc_val = ADC_In(SERVO_ADC_CHANNEL);
-  
-	// Log adc value for debugging.
-	LiveData.servoAdc = adc_val;
 	
   return adc_val * 1000 / 4096;
 }
 
 /**
- * Determine car's direction in degrees based on servo duty value.
+ * Determine steering direction in degrees based on servo duty value.
  */
 static uint16_t getDirectionFromDutyVal(uint16_t duty) {
-	// .266 v is SERVOMAX, left
-	// 
-	
+	int16_t dutyS = (int16_t)duty;
+	int16_t degS;
 	
   if (duty <= SERVO_MIN_DUTY) {
-    return SERVO_MIN_DUTY;
+    return 360 + SERVO_MIN_DEG;
   }
   
   if (duty >= SERVO_MAX_DUTY) {
-    return SERVO_MAX_DUTY;
+    return SERVO_MAX_DEG;
   }
 
-  if (duty >= SERVO_MID_DUTY) {
-    return (SERVO_MAX_DUTY - duty) * SERVO_MAX_DEG / 
-           (SERVO_MAX_DUTY - SERVO_MID_DUTY);
-  }
-  
-  return SERVO_MIN_DEG + (duty - SERVO_MIN_DUTY) * (360 - SERVO_MIN_DEG) / 
-         (SERVO_MAX_DUTY - SERVO_MID_DUTY);
+  degS = (SERVO_MAX_DUTY - duty) * (SERVO_MAX_DEG - SERVO_MIN_DEG) / 
+           (SERVO_MAX_DUTY - SERVO_MIN_DUTY) 
+	         - (SERVO_MAX_DEG - SERVO_MIN_DEG) / 2;
+	
+	return degS < 0 ? 360 + degS : degS;
 }

@@ -13,6 +13,6 @@
 void ServoActuator_Init(void);
 
 /**
- * Reads ADC value to determine direction of car.
+ * Reads ADC value to determine direction of steering relative to car.
  */
 uint16_t ServoActuator_GetDirection(void);

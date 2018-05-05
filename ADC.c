@@ -11,7 +11,7 @@
 #include "ADC.h"
 
 const uint8_t NUM_CHANNELS = 12;
-const uint8_t HW_AVG = ADC_SAC_AVG_OFF;
+const uint8_t HW_AVG = ADC_SAC_AVG_64X;
 
 typedef enum ChannelStatus {CLOSED, OPEN} ChannelStatus;
 ChannelStatus ChannelStatuses[NUM_CHANNELS]; 
@@ -33,7 +33,7 @@ void ADC_Open(uint8_t channel) {
 
   if (firstInit) {
     // Need to activate ADC1 before the ports and ports before the rest of 
-    // ADC0.
+    // ADC1.
     SYSCTL_RCGCADC_R |= 0x2; // Activate ADC1
     initChannelArr();
     initADC();
