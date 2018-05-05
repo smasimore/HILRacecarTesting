@@ -13,6 +13,7 @@
 #define NUM_IR_CHANNELS 5
 #define PWM_PERIOD 4000 // 10 kHz since pwm has clock / 2
 #define CALIBRATION_AT_500MM 18
+#define CALIBRATION_DIST 500
  
 static uint16_t getDutyFromSensorVal(uint32_t val);
 static void setChannelDuty(uint8_t channel, uint16_t duty);
@@ -186,7 +187,7 @@ static uint16_t getDutyFromSensorVal(uint32_t val) {
 	
 	// Calibrate to account for test controller pwm inaccuracies. More accurate
 	// as target value increases, so reduce calibration value accordingly.
-	duty += CALIBRATION_AT_500MM * 500 / val;
+	duty += CALIBRATION_AT_500MM * CALIBRATION_DIST / val;
   
   return duty;
 }

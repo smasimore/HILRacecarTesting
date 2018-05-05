@@ -71,12 +71,26 @@ struct wall {
 	uint32_t endY;	
 };
 
+/**
+ * Environment (track).
+ */
 struct environment {
 	uint32_t finishLineY;
 	uint8_t numWalls;
 	struct wall * walls;
 };
 
+/**
+ * Struct to hold data for printing while sim is running.
+ */
+struct live_data {
+	uint32_t time;
+	uint32_t x;	
+	uint32_t y;
+	int32_t vel;
+  uint32_t dir;
+	uint16_t servoAdc;
+};
 
 // FUNCTIONS
 

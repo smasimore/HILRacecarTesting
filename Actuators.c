@@ -12,11 +12,12 @@
 #include "MotorActuator.h"
 #include "ServoActuator.h"
 
-#define MOCK_ACTUATORS
+// Uncomment to mock actuator values (e.g. for testing sim)
+//#define MOCK_ACTUATORS
 
 #ifdef MOCK_ACTUATORS
   extern uint32_t NumSimTicks;
-  uint32_t TestDir[30] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
+  uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
 #endif
 
 /**
@@ -34,7 +35,9 @@ void Actuators_UpdateVelocityAndDirection(struct car * car) {
 #ifdef MOCK_ACTUATORS
   car->dir = TestDir[NumSimTicks];
 #else
-  car->vel = MotorActuator_GetVelocity();
-  car->dir = ServoActuator_GetDirection();
+	uint16_t dir;
+  car->vel = car->vel; //MotorActuator_GetVelocity();
+  dir = car->dir + ServoActuator_GetDirection();
+	car->dir = dir > 360 ? dir - 360 : dir;
 #endif
 }

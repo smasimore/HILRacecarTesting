@@ -18,13 +18,45 @@ static int16_t getVelocityFromDuty(uint16_t adc_val, uint8_t forward);
  * direction.
  */
 void MotorActuator_Init(void) {
-  // todo: input capture init and pin inputs for H-bridge
-  
-  // MOTOR_SETDUTY, other MOTOR_* funcs change mode
-    // PWM0_0_CMPA_R and PWM0_1_CMPA_R (should be same.. assume same)
-  // DIR: 
-    // on fwd, PB7 = 0x80 PB4 = 0x10; 
-    // on reverse, PB6 = 0x40, PB5 = 0x20
+// Version 6 hardware (use program main)
+// to go forward on right motor
+// PB7 A+  regular GPIO level high (1)
+// PB6 A-  PWM 100 Hz, PWM negative logic (e.g., 10% duty cycle is 90% power)
+// to go backward on right motor
+// PB7 A+  PWM 100 Hz, PWM negative logic (e.g., 10% duty cycle is 90% power)
+// PB6 A-  regular GPIO level high (1)
+// coast on right motor (fast decay)
+// PB7 A+  regular GPIO level low (0)
+// PB6 A-  regular GPIO level low (0)
+// to go forward on left motor
+// PB5 B+  PWM 100 Hz, PWM negative logic (e.g., 10% duty cycle is 90% power)
+// PB4 B-  regular GPIO level high (1) 
+// to go backward on left motor
+// PB5 B+  regular GPIO level high (1)
+// PB4 B-  PWM 100 Hz, PWM negative logic (e.g., 10% duty cycle is 90% power)
+// coast on left motor (fast decay)
+// PB5 B+  regular GPIO level low (0)
+// PB4 B-  regular GPIO level low (0)
+	
+	/* thoughts:
+	ignore coasting, only time robot uses is after 180s
+	ignore differential motor speeds
+	
+	PB7: 
+	  - when fwd, 3.1 even when stopped
+		- when bwd, .9
+	
+	PB6
+	  - when fwd .5
+		- when bwd 3.1
+		
+	if PB7 high, fwd, PB6 is pwm
+	if PB6 high, bwd, PB7 is pwm
+	
+	set up 2 adc channels
+	
+	monitor one motor (right)	
+	*/
 }
 
 /**

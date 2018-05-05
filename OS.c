@@ -297,7 +297,7 @@ void OS_Suspend(void) {
 // ******** OS_Time ************
 // return the system time 
 // Inputs:  none
-// Outputs: time in 12.5ns units, 0 to 4294967295
+// Outputs: time in 12.5ns units, 0 to 4294967295 (53s)
 // The time resolution should be less than or equal to 1us, and the precision 32 bits
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_TimeDifference have the same resolution and precision 

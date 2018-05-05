@@ -16,6 +16,7 @@
 #include "SimLogger.h"
 #include "OS.h"
 #include "terminal.h"
+#include "FIFO.h"
 
 #define NUM_SENSORS 7
 #define NUM_WALLS 6
@@ -26,13 +27,17 @@ struct sensor Sensors[NUM_SENSORS];
 struct wall Walls[NUM_WALLS];
 
 uint32_t NumSimTicks = 0;
+uint8_t SimComplete = 0;
+struct live_data LiveData;
 
 static void initObjects(void);
 static void addSimFGThread(void);
 static void simThread(void);
-static void terminal(void);
-static void idle(void);
+static void dataOut(void);
 static void endSim(char * message);
+
+// Fifo for storing live data to be printed to terminal in dataOut thread.
+AddIndexFifo(LiveData, 1, struct live_data, 1, 0);
 
 int main(void){
   OS_Init();
@@ -42,6 +47,7 @@ int main(void){
   initObjects();
   Sensors_Init(&Car);
   Actuators_Init();
+	LiveDataFifo_Init();
   
   // Set sensors to initial state.
   Simulator_UpdateSensors(&Car, &Environment);
@@ -50,11 +56,8 @@ int main(void){
   // Background sim thread
   OS_AddPeriodicThread(&addSimFGThread, CLOCK_FREQ / SIM_FREQ, 2); // 10 hz
   
-  // Foreground user communication thread
-  OS_AddThread(&terminal, 128, 3); 
-  
-  // Foreground idle threaad
-  OS_AddThread(&idle, 128, 9); 
+  // Foreground data output thread, lowest priority.
+  OS_AddThread(&dataOut, 128, 9); 
   
   terminal_printString("\r\n Starting test...\r\n");
   OS_Launch(TIME_2MS);
@@ -83,7 +86,7 @@ static void addSimFGThread(void) {
  * 4) Update sensor values.
  * 5) Increment NumSimTicks.
  */
-static void simThread(void) {
+static void simThread(void) {	
   // Store car's previous x,y to later check if hit a wall.
   uint32_t prevX = Car.x;
   uint32_t prevY = Car.y;
@@ -94,6 +97,14 @@ static void simThread(void) {
   // Log event after velocity and dir have been updated but before
   // car location has been updated.
   SimLogger_LogRow(&Car, NumSimTicks);
+	
+	// Add data to FIFO to be printed in dataOut low priority thread
+	LiveData.time = OS_Time();
+	LiveData.x = Car.x;
+	LiveData.y = Car.y;
+	LiveData.vel = Car.vel;
+	LiveData.dir = Car.dir;
+	LiveDataFifo_Put(LiveData);
     
   // Update car position based on current position, velocity, and direction.
   Simulator_MoveCar(&Car, MS_PER_SIM_TICK);
@@ -123,35 +134,34 @@ static void simThread(void) {
 }
 
 /**
- * Terminal foreground thread.
+ * Whenever there's data to print and nothing more important to run, prints to
+ * terminal. Foreground thread.
  */
-static void terminal(void) {
+static void dataOut(void) {
+	struct live_data live_data;
   while(1) {
-    terminal_ReadAndParse();
-  }
+	  if (LiveDataFifo_Get(&live_data) && !SimComplete) {
+			terminal_printString("t: ");
+			terminal_printValueDec(live_data.time / 80000000);
+			terminal_printString(" | x: ");
+			terminal_printValueDec(live_data.x);
+			terminal_printString(" | y: ");
+			terminal_printValueDec(live_data.y);
+			terminal_printString(" | vel: ");
+			terminal_printValueDec(live_data.vel);
+			terminal_printString(" | dir: ");
+			terminal_printValueDec(live_data.dir);
+			terminal_printString(" | servo adc: ");
+			terminal_printValueDec(live_data.servoAdc);
+			terminal_printString("\r\n");
+			terminal_printString("\r\n");
+		}
+	}
 }
 
-/**
- * Idle foreground thread.
- */
-static void idle(void) {
-  while(1) {}
-}
-
 
 /**
- * Init state:
- *        _______ <-- finish line
- *       |       |
- *       |       |
- *       |       |
- *       |       |
- *       |       |
- *       |       |
- *       |   C   |
- *        -------
- *
- * C.v = 0, C.dir = 90
+ * Initialize environment and car.
  * 
  */
 static void initObjects(void) { // initObjectsSimple
@@ -167,7 +177,7 @@ static void initObjects(void) { // initObjectsSimple
 
   Walls[2].startX = 1000;
   Walls[2].startY = 1500;
-  Walls[2].endX = 2000;
+  Walls[2].endX = 2500;
   Walls[2].endY = 1500;
 
   Walls[3].startX = 2000;
@@ -175,9 +185,9 @@ static void initObjects(void) { // initObjectsSimple
   Walls[3].endX = 3000;
   Walls[3].endY = 500;  
   
-  Walls[4].startX = 2000;
+  Walls[4].startX = 2500;
   Walls[4].startY = 1500;
-  Walls[4].endX = 2000;
+  Walls[4].endX = 2500;
   Walls[4].endY = 5000;
 
   Walls[5].startX = 3000;
@@ -242,6 +252,7 @@ static void endSim(char * message) {
   terminal_printString(message);
   terminal_printString("\r\n");
   terminal_printString("Test complete.\r\n\r\n");
+	SimComplete = 1;
 }
 
 /* 
