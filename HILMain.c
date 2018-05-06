@@ -20,6 +20,7 @@
 
 #define NUM_SENSORS 7
 #define NUM_WALLS 6
+#define DEBUGGING
 
 struct car Car;
 struct environment Environment;
@@ -98,6 +99,7 @@ static void simThread(void) {
   // car location has been updated.
   SimLogger_LogRow(&Car, NumSimTicks);
 	
+#ifdef DEBUGGING
 	// Add data to FIFO to be printed in dataOut low priority thread
 	LiveData.time = OS_Time();
 	LiveData.x = Car.x;
@@ -105,6 +107,7 @@ static void simThread(void) {
 	LiveData.vel = Car.vel;
 	LiveData.dir = Car.dir;
 	LiveDataFifo_Put(LiveData);
+#endif
     
   // Update car position based on current position, velocity, and direction.
   Simulator_MoveCar(&Car, MS_PER_SIM_TICK);
@@ -152,7 +155,7 @@ static void dataOut(void) {
 			terminal_printString(" | dir: ");
 			terminal_printValueDec(live_data.dir);
 			terminal_printString(" | servo duty: ");
-			terminal_printValueDec(live_data.servoDuty);
+			terminal_printValueDec(live_data.servoDuty);		
 			terminal_printString("\r\n");
 			terminal_printString("\r\n");
 		}

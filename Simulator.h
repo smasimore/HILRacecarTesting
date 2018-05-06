@@ -90,6 +90,8 @@ struct live_data {
 	int32_t vel;
   uint32_t dir;
 	uint16_t servoDuty;
+	uint16_t motorPB7Duty;
+	uint16_t motorPB6Duty;
 };
 
 // FUNCTIONS

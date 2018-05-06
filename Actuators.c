@@ -17,7 +17,11 @@
 
 #ifdef MOCK_ACTUATORS
   extern uint32_t NumSimTicks;
-  uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
+  // Example of completion
+	//uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
+  // Example of crash
+	uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  
+
 #endif
 
 /**
@@ -34,6 +38,7 @@ void Actuators_Init(void) {
 void Actuators_UpdateVelocityAndDirection(struct car * car) {
 #ifdef MOCK_ACTUATORS
   car->dir = TestDir[NumSimTicks];
+	ServoActuator_GetDirection(); // for debugging
 #else
 	uint16_t dir;
   car->vel = car->vel; //MotorActuator_GetVelocity();
