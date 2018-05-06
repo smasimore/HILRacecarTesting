@@ -38,10 +38,11 @@ void Actuators_Init(void) {
 void Actuators_UpdateVelocityAndDirection(struct car * car) {
 #ifdef MOCK_ACTUATORS
   car->dir = TestDir[NumSimTicks];
-	ServoActuator_GetDirection(); // for debugging
 #else
 	uint16_t dir;
-  car->vel = car->vel; //MotorActuator_GetVelocity();
+  car->vel = car->vel; // keeping constant since not reading expected values
+											 // for motors currently. Need to debug w scope.
+	MotorActuator_GetVelocity(); // for debugging
   dir = car->dir + ServoActuator_GetDirection();
 	car->dir = dir > 360 ? dir - 360 : dir;
 #endif

@@ -13,7 +13,7 @@
 // hw actuators running in parallel. SERVO_MAX_DUTY and SERVO_MIN_DUTY require
 // tuning in any environments (e.g. diff power, time robot powered).
 // NOTE: precision of servo signal poor, so binning into L, M, R. 
-#define SERVO_DUTY_L 50 // Duty (res = tenth of %) --> 30 deg to left
+#define SERVO_DUTY_L 40 // Duty (res = tenth of %) --> 30 deg to left
 #define SERVO_DUTY_R 0 // Duty --> 30 degrees to the right
 #define SERVO_DEG_L 30 
 #define SERVO_DEG_M 0

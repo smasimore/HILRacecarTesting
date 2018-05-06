@@ -3,6 +3,7 @@
  * Author: Sarah Masimore
  * Last Updated Date: 04/22/2018
  * Description: Inits and reads input capture and pins to determine robot velocity.
+ * NOTE: currently PB6 not reading expected values so assuming fwd at constant speed.
  */
  
 #include "MotorActuator.h"
@@ -11,7 +12,7 @@
 
 #define MAX_VELOCITY 1114 // mm/s, measured car's velocity at max pwm
 #define PB7_ADC_CHANNEL 1
-#define PB6_ADC_CHANNEL 2
+#define PB6_ADC_CHANNEL 3 // channel 2, PE2 not working
 
 extern struct live_data LiveData;
 
