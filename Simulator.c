@@ -51,7 +51,12 @@ uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX,
                           uint32_t prevY, uint32_t nextX, uint32_t nextY) {
   int j;
   struct wall * wall;
-                            
+  
+	// Hit boundary of environment.
+	if (nextX == 0 || nextY == 0) {
+		return 1;
+	}
+														
   for (j = 0; j < env->numWalls; j++) {
     wall = &env->walls[j];
     

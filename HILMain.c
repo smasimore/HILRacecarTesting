@@ -114,13 +114,13 @@ static void simThread(void) {
   
   // Check if hit wall.
   if (Simulator_HitWall(&Environment, prevX, prevY, Car.x, Car.y)) {
-    //endSim("Car crashed into wall!");
+    endSim("Car crashed into wall!");
   }
   
   // If got to this point and car's y position is higher than finish line,
   // race is over.
   if (Car.y >= Environment.finishLineY) {
-    //endSim("Car completed race!");
+    endSim("Car completed race!");
   }    
   
   // Update sensor vals and update voltages being outputted to car.
@@ -130,7 +130,7 @@ static void simThread(void) {
   NumSimTicks++;
   
   if (NumSimTicks == MAX_NUM_TICKS) {
-    //endSim("Sim hit max num ticks");
+    endSim("Sim hit max num ticks");
   }
   
   OS_Kill();
@@ -167,7 +167,7 @@ static void dataOut(void) {
  * Initialize environment and car.
  * 
  */
-static void initObjects(void) { // initObjectsSimple
+static void initObjects(void) {
   Walls[0].startX = 1000;
   Walls[0].startY = 0;
   Walls[0].endX = 1000;
@@ -242,7 +242,7 @@ static void initObjects(void) { // initObjectsSimple
 
   // Start car in the middle of the two walls, no velocity, facing north.
   Car.x = 1500;
-  Car.y = 0;
+  Car.y = 1;
   Car.vel = 1000; // 1000 mm/s
   Car.dir = 90;
 }
@@ -272,7 +272,9 @@ TEST ENVIRONMENTS
  *       |   C   |
  *        -------
 
-  STRAIGHT
+  STRAIGHT (robot crosses finish line)
+
+	start car at x = 1500
 
   Walls[0].startX = 1000;
   Walls[0].startY = 0;
@@ -283,5 +285,74 @@ TEST ENVIRONMENTS
   Walls[1].startY = 0;
   Walls[1].endX = 2000;
   Walls[1].endY = 5000;  
+
+
+  WIDE TURNS (robot turns around and crashes)
+	
+	start car at x = 1500
+	
+  Walls[0].startX = 1000;
+  Walls[0].startY = 0;
+  Walls[0].endX = 1000;
+  Walls[0].endY = 1500;
+
+  Walls[1].startX = 2000;
+  Walls[1].startY = 0;
+  Walls[1].endX = 2000;
+  Walls[1].endY = 500;  
+
+  Walls[2].startX = 1000;
+  Walls[2].startY = 1500;
+  Walls[2].endX = 2500;
+  Walls[2].endY = 1500;
+
+  Walls[3].startX = 2000;
+  Walls[3].startY = 500;
+  Walls[3].endX = 3000;
+  Walls[3].endY = 500;  
+  
+  Walls[4].startX = 2500;
+  Walls[4].startY = 1500;
+  Walls[4].endX = 2500;
+  Walls[4].endY = 5000;
+
+  Walls[5].startX = 3000;
+  Walls[5].startY = 500;
+  Walls[5].endX = 3000;
+  Walls[5].endY = 5000;  
+
+  NORMAL TURN (robot doesn't turn hard enough and crashes)
+	
+	start car at x = 1750
+	
+  Walls[0].startX = 1500;
+  Walls[0].startY = 0;
+  Walls[0].endX = 1500;
+  Walls[0].endY = 1000;
+
+  Walls[1].startX = 2000;
+  Walls[1].startY = 0;
+  Walls[1].endX = 2000;
+  Walls[1].endY = 500;  
+
+  Walls[2].startX = 1500;
+  Walls[2].startY = 1000;
+  Walls[2].endX = 2500;
+  Walls[2].endY = 1000;
+
+  Walls[3].startX = 2000;
+  Walls[3].startY = 500;
+  Walls[3].endX = 3000;
+  Walls[3].endY = 500;  
+  
+  Walls[4].startX = 2500;
+  Walls[4].startY = 1000;
+  Walls[4].endX = 2500;
+  Walls[4].endY = 5000;
+
+  Walls[5].startX = 3000;
+  Walls[5].startY = 500;
+  Walls[5].endX = 3000;
+  Walls[5].endY = 5000;  
 
 */

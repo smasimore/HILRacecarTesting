@@ -58,9 +58,6 @@ static uint16_t getDuty(void) {
  * Precision of servo input highly variable so binning into L, R, and M.
  */
 static uint16_t getDirectionFromDutyVal(uint16_t duty) {
-	int16_t dutyS = (int16_t)duty;
-	int16_t degS;
-	
   if (duty <= SERVO_DUTY_R) {
     return 360 + SERVO_DEG_R;
   }
