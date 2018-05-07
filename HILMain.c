@@ -114,13 +114,13 @@ static void simThread(void) {
   
   // Check if hit wall.
   if (Simulator_HitWall(&Environment, prevX, prevY, Car.x, Car.y)) {
-    //endSim("Car crashed into wall!");
+    endSim("Car crashed into wall!");
   }
   
   // If got to this point and car's y position is higher than finish line,
   // race is over.
   if (Car.y >= Environment.finishLineY) {
-    //endSim("Car completed race!");
+    endSim("Car completed race!");
   }    
   
   // Update sensor vals and update voltages being outputted to car.
@@ -130,7 +130,7 @@ static void simThread(void) {
   NumSimTicks++;
   
   if (NumSimTicks == MAX_NUM_TICKS) {
-    //endSim("Sim hit max num ticks");
+    endSim("Sim hit max num ticks");
   }
   
   OS_Kill();
@@ -151,7 +151,12 @@ static void dataOut(void) {
 			terminal_printString(" | y: ");
 			terminal_printValueDec(live_data.y);
 			terminal_printString(" | vel: ");
-			terminal_printValueDec(live_data.vel);
+			if (live_data.vel < 0) {
+				terminal_printString("-");
+				terminal_printValueDec(live_data.vel * -1);
+			} else {
+				terminal_printValueDec(live_data.vel);
+			}
 			terminal_printString(" | dir: ");
 			terminal_printValueDec(live_data.dir);
 			terminal_printString(" | servo duty: ");

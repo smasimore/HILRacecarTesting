@@ -16,7 +16,7 @@
 
 extern struct live_data LiveData;
 
-static int16_t getVelocityFromDuty(uint16_t adc_val, uint8_t forward);
+static int32_t getVelocityFromDuty(uint32_t adc_val, uint8_t forward);
 
 /**
  * Initializes ADC and pins for reading motor voltage and h-bridge to determine
@@ -32,27 +32,32 @@ void MotorActuator_Init(void) {
  * state and differential motor speeds are ignored. 
  */
 int32_t MotorActuator_GetVelocity(void) {
-  uint16_t pb7_duty = ADC_In(PB7_ADC_CHANNEL) * 1000 / 4096; 
-  uint16_t pb6_duty = ADC_In(PB6_ADC_CHANNEL) * 1000 / 4096; 
+  int32_t pb7_duty = ADC_In(PB7_ADC_CHANNEL) * 1000 / 4096; 
+  int32_t pb6_duty = ADC_In(PB6_ADC_CHANNEL) * 1000 / 4096; 
 
 	// Print to terminal for debugging
 	LiveData.motorPB7Duty = pb7_duty;
 	LiveData.motorPB6Duty = pb6_duty;
 	
 	// Robot moving forwards.
-	if (pb7_duty > pb6_duty) {
-		return getVelocityFromDuty(pb6_duty, 1);
+	if (pb7_duty >= pb6_duty) {
+		// When running hw actuators in parallel, pin is pulled down. Set as full speed.
+		// When not running them in parallel use PB6 duty.
+		return getVelocityFromDuty(999, 1);
 	}
 	
 	// Robog moving backwards.
-	return getVelocityFromDuty(pb7_duty, 0);
+	// When running hw actuators in parallel, pin is pulled down. Set as 70% speed.
+	// When not running them in parallel use PB7 duty.
+	return getVelocityFromDuty(700, 0);
 }
 
 /**
  * Determine velocity from duty (in tenth of percent). If going backwards, return the negative 
  * vel.
  */
-static int16_t getVelocityFromDuty(uint16_t duty, uint8_t forward) {
-  uint16_t vel = duty * MAX_VELOCITY / 1000;
-  return forward ? (int16_t)vel : -1 * (int16_t)vel;
+static int32_t getVelocityFromDuty(uint32_t duty, uint8_t forward) {
+  int32_t vel = duty * MAX_VELOCITY / 1000;
+	
+  return forward ? vel : -1 * vel;
 }

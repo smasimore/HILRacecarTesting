@@ -40,9 +40,14 @@ void Actuators_UpdateVelocityAndDirection(struct car * car) {
   car->dir = TestDir[NumSimTicks];
 #else
 	uint16_t dir;
-  car->vel = car->vel; // keeping constant since not reading expected values
-											 // for motors currently. Need to debug w scope.
-	MotorActuator_GetVelocity(); // for debugging
+  car->vel = MotorActuator_GetVelocity();
+	
+	if (car->vel > 2000) {
+		car->vel--;
+	} else if (car->vel < 0) {
+		car->vel--;
+	}
+	
   dir = car->dir + ServoActuator_GetDirection();
 	car->dir = dir > 360 ? dir - 360 : dir;
 #endif

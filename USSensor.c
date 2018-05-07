@@ -1,7 +1,7 @@
 /**  
  * File: USSensor.c
  * Author: Sarah Masimore
- * Last Updated Date: 04/19/2018
+ * Last Updated Date: 05/06/2018
  * Description: Manages init'ing and updating Ultrasonic Ping sensor ports and 
  *              pins.
  */
@@ -23,7 +23,7 @@ uint32_t CurPingPeriod[NUM_US_CHANNELS] = {0, 0, 0};
 static uint32_t getPeriodFromPingSensorVal(uint32_t val);
 
 /**
-* TODO: desc
+ * Initialize 3 ultrasonic ping sensors by init'ing 3 GPIO pins and 3 timers.
  */ 
 void USSensor_Init(struct sensor * sensor) {
   volatile unsigned long delay;
@@ -137,7 +137,8 @@ void USSensor_Init(struct sensor * sensor) {
 }
 
 /**
- * TODO: comment
+ * Update global value used to calculate time when US sensor responds to ping
+ * from robot.
  */
 void USSensor_UpdateOutput(struct sensor * sensor) {
   CurPingPeriod[sensor->channel] = getPeriodFromPingSensorVal(sensor->val);
