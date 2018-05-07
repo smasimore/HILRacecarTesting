@@ -17,7 +17,7 @@ struct row {
   uint32_t numTicks;
   uint32_t carX;
   uint32_t carY;
-  uint32_t carV;
+  int32_t carV;
   uint16_t carDir;
   uint32_t sensor0;
   uint32_t sensor1;
@@ -80,7 +80,12 @@ void SimLogger_PrintToTerminal(void) {
     terminal_printString(",");
     terminal_printValueDec(row.carY);
     terminal_printString(",");
-    terminal_printValueDec(row.carV);
+		if (row.carV < 0) {
+			terminal_printString("-");
+			terminal_printValueDec(row.carV * -1);
+		} else {
+			terminal_printValueDec(row.carV);
+		}
     terminal_printString(",");
     terminal_printValueDec(row.carDir);
     terminal_printString(",");

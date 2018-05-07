@@ -48,7 +48,7 @@ int main(void){
   initObjects();
   Sensors_Init(&Car);
   Actuators_Init();
-	LiveDataFifo_Init();
+  LiveDataFifo_Init();
   
   // Set sensors to initial state.
   Simulator_UpdateSensors(&Car, &Environment);
@@ -87,7 +87,7 @@ static void addSimFGThread(void) {
  * 4) Update sensor values.
  * 5) Increment NumSimTicks.
  */
-static void simThread(void) {	
+static void simThread(void) {  
   // Store car's previous x,y to later check if hit a wall.
   uint32_t prevX = Car.x;
   uint32_t prevY = Car.y;
@@ -98,15 +98,15 @@ static void simThread(void) {
   // Log event after velocity and dir have been updated but before
   // car location has been updated.
   SimLogger_LogRow(&Car, NumSimTicks);
-	
+  
 #ifdef DEBUGGING
-	// Add data to FIFO to be printed in dataOut low priority thread
-	LiveData.time = OS_Time();
-	LiveData.x = Car.x;
-	LiveData.y = Car.y;
-	LiveData.vel = Car.vel;
-	LiveData.dir = Car.dir;
-	LiveDataFifo_Put(LiveData);
+  // Add data to FIFO to be printed in dataOut low priority thread
+  LiveData.time = OS_Time();
+  LiveData.x = Car.x;
+  LiveData.y = Car.y;
+  LiveData.vel = Car.vel;
+  LiveData.dir = Car.dir;
+  LiveDataFifo_Put(LiveData);
 #endif
     
   // Update car position based on current position, velocity, and direction.
@@ -126,7 +126,7 @@ static void simThread(void) {
   // Update sensor vals and update voltages being outputted to car.
   Simulator_UpdateSensors(&Car, &Environment);
   Sensors_UpdateOutput(&Car);
-	
+  
   NumSimTicks++;
   
   if (NumSimTicks == MAX_NUM_TICKS) {
@@ -141,34 +141,34 @@ static void simThread(void) {
  * terminal. Foreground thread.
  */
 static void dataOut(void) {
-	struct live_data live_data;
+  struct live_data live_data;
   while(1) {
-	  if (LiveDataFifo_Get(&live_data) && !SimComplete) {
-			terminal_printString("t: ");
-			terminal_printValueDec(live_data.time / 80000000);
-			terminal_printString(" | x: ");
-			terminal_printValueDec(live_data.x);
-			terminal_printString(" | y: ");
-			terminal_printValueDec(live_data.y);
-			terminal_printString(" | vel: ");
-			if (live_data.vel < 0) {
-				terminal_printString("-");
-				terminal_printValueDec(live_data.vel * -1);
-			} else {
-				terminal_printValueDec(live_data.vel);
-			}
-			terminal_printString(" | dir: ");
-			terminal_printValueDec(live_data.dir);
-			terminal_printString(" | servo duty: ");
-			terminal_printValueDec(live_data.servoDuty);		
-			terminal_printString(" | motor pb7 duty: ");
-			terminal_printValueDec(live_data.motorPB7Duty);	
-			terminal_printString(" | motor pb6 duty: ");
-			terminal_printValueDec(live_data.motorPB6Duty);	
-			terminal_printString("\r\n");
-			terminal_printString("\r\n");
-		}
-	}
+    if (LiveDataFifo_Get(&live_data) && !SimComplete) {
+      terminal_printString("t: ");
+      terminal_printValueDec(live_data.time / 80000000);
+      terminal_printString(" | x: ");
+      terminal_printValueDec(live_data.x);
+      terminal_printString(" | y: ");
+      terminal_printValueDec(live_data.y);
+      terminal_printString(" | vel: ");
+      if (live_data.vel < 0) {
+        terminal_printString("-");
+        terminal_printValueDec(live_data.vel * -1);
+      } else {
+        terminal_printValueDec(live_data.vel);
+      }
+      terminal_printString(" | dir: ");
+      terminal_printValueDec(live_data.dir);
+      terminal_printString(" | servo duty: ");
+      terminal_printValueDec(live_data.servoDuty);    
+      terminal_printString(" | motor pb7 duty: ");
+      terminal_printValueDec(live_data.motorPB7Duty);  
+      terminal_printString(" | motor pb6 duty: ");
+      terminal_printValueDec(live_data.motorPB6Duty);  
+      terminal_printString("\r\n");
+      terminal_printString("\r\n");
+    }
+  }
 }
 
 
@@ -264,7 +264,7 @@ static void endSim(char * message) {
   terminal_printString(message);
   terminal_printString("\r\n");
   terminal_printString("Test complete.\r\n\r\n");
-	SimComplete = 1;
+  SimComplete = 1;
 }
 
 /* 
@@ -283,7 +283,7 @@ TEST ENVIRONMENTS
 
   STRAIGHT (robot crosses finish line)
 
-	start car at x = 1500
+  start car at x = 1500
 
   Walls[0].startX = 1000;
   Walls[0].startY = 0;
@@ -297,9 +297,9 @@ TEST ENVIRONMENTS
 
 
   WIDE TURNS (robot turns around and crashes)
-	
-	start car at x = 1500
-	
+  
+  start car at x = 1500
+  
   Walls[0].startX = 1000;
   Walls[0].startY = 0;
   Walls[0].endX = 1000;
@@ -331,9 +331,9 @@ TEST ENVIRONMENTS
   Walls[5].endY = 5000;  
 
   NORMAL TURN (robot doesn't turn hard enough and crashes)
-	
-	start car at x = 1750
-	
+  
+  start car at x = 1750
+  
   Walls[0].startX = 1500;
   Walls[0].startY = 0;
   Walls[0].endX = 1500;

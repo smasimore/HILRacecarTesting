@@ -10,6 +10,8 @@
 #include "ADC.h"
 #include "Simulator.h"
 
+#define MOTORS_IN_PARALLEL_MODE
+
 #define MAX_VELOCITY 1114 // mm/s, measured car's velocity at max pwm
 #define PB7_ADC_CHANNEL 1
 #define PB6_ADC_CHANNEL 3 // channel 2, PE2 not working
@@ -39,6 +41,7 @@ int32_t MotorActuator_GetVelocity(void) {
 	LiveData.motorPB7Duty = pb7_duty;
 	LiveData.motorPB6Duty = pb6_duty;
 	
+#ifdef MOTORS_IN_PARALLEL_MODE
 	// Robot moving forwards.
 	if (pb7_duty >= pb6_duty) {
 		// When running hw actuators in parallel, pin is pulled down. Set as full speed.
@@ -50,6 +53,15 @@ int32_t MotorActuator_GetVelocity(void) {
 	// When running hw actuators in parallel, pin is pulled down. Set as 70% speed.
 	// When not running them in parallel use PB7 duty.
 	return getVelocityFromDuty(700, 0);
+#endif
+	
+	// Robot moving forwards.
+	if (pb7_duty >= pb6_duty) {
+		return getVelocityFromDuty(pb6_duty, 1);
+	}
+	
+	// Robot moving backwards.
+	return getVelocityFromDuty(pb7_duty, 0);
 }
 
 /**

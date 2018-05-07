@@ -22,7 +22,7 @@ int32_t getDistanceBetweenPoints(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
  * Simulator_HitWall.
  */
 void Simulator_MoveCar(struct car * car, uint32_t timePassedMs) {
-	uint8_t fwd = car->vel > 0;
+  uint8_t fwd = car->vel > 0;
   uint32_t vel = fwd ? car->vel : car->vel * -1;
   uint32_t dir = fwd ? car->dir : (car->dir > 180 ? car->dir - 180 : car->dir + 180);
   uint32_t x = car->x;
@@ -53,11 +53,11 @@ uint8_t Simulator_HitWall(struct environment * env, uint32_t prevX,
   int j;
   struct wall * wall;
   
-	// Hit boundary of environment.
-	if (nextX == 0 || nextY == 0) {
-		return 1;
-	}
-														
+  // Hit boundary of environment.
+  if (nextX == 0 || nextY == 0) {
+    return 1;
+  }
+                            
   for (j = 0; j < env->numWalls; j++) {
     wall = &env->walls[j];
     

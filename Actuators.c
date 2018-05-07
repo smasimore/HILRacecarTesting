@@ -18,9 +18,9 @@
 #ifdef MOCK_ACTUATORS
   extern uint32_t NumSimTicks;
   // Example of completion
-	//uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
+  //uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};  
   // Example of crash
-	uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  
+  uint32_t TestDir[34] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  
 
 #endif
 
@@ -39,16 +39,9 @@ void Actuators_UpdateVelocityAndDirection(struct car * car) {
 #ifdef MOCK_ACTUATORS
   car->dir = TestDir[NumSimTicks];
 #else
-	uint16_t dir;
+  uint16_t dir;
   car->vel = MotorActuator_GetVelocity();
-	
-	if (car->vel > 2000) {
-		car->vel--;
-	} else if (car->vel < 0) {
-		car->vel--;
-	}
-	
   dir = car->dir + ServoActuator_GetDirection();
-	car->dir = dir > 360 ? dir - 360 : dir;
+  car->dir = dir > 360 ? dir - 360 : dir;
 #endif
 }
