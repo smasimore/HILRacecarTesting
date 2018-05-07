@@ -177,17 +177,17 @@ void IRSensor_UpdateOutput(struct sensor * sensor) {
  * duty value to pass PWM. Duty is % time low (resolution .1%).
  */
 static uint16_t getDutyFromSensorVal(uint32_t val) {
-	uint16_t duty;
-	
+  uint16_t duty;
+  
   if (val < IR_MIN_MM || val > IR_MAX_MM) {
     return 0;
   }
-	
-	duty = IRMMToDuty[val - IR_MIN_MM];
-	
-	// Calibrate to account for test controller pwm inaccuracies. More accurate
-	// as target value increases, so reduce calibration value accordingly.
-	duty += CALIBRATION_AT_500MM * CALIBRATION_DIST / val;
+  
+  duty = IRMMToDuty[val - IR_MIN_MM];
+  
+  // Calibrate to account for test controller pwm inaccuracies. More accurate
+  // as target value increases, so reduce calibration value accordingly.
+  duty += CALIBRATION_AT_500MM * CALIBRATION_DIST / val;
   
   return duty;
 }

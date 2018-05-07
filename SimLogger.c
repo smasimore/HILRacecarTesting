@@ -80,56 +80,56 @@ void SimLogger_PrintToTerminal(void) {
     terminal_printString(",");
     terminal_printValueDec(row.carY);
     terminal_printString(",");
-		if (row.carV < 0) {
-			terminal_printString("-");
-			terminal_printValueDec(row.carV * -1);
-		} else {
-			terminal_printValueDec(row.carV);
-		}
+    if (row.carV < 0) {
+      terminal_printString("-");
+      terminal_printValueDec(row.carV * -1);
+    } else {
+      terminal_printValueDec(row.carV);
+    }
     terminal_printString(",");
     terminal_printValueDec(row.carDir);
     terminal_printString(",");
-		if (row.sensor0 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor0);
-		}
+    if (row.sensor0 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor0);
+    }
     terminal_printString(",");
-		if (row.sensor1 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor1);
-		}
+    if (row.sensor1 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor1);
+    }
     terminal_printString(",");
-		if (row.sensor2 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor2);
-		}
+    if (row.sensor2 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor2);
+    }
     terminal_printString(",");
-		if (row.sensor3 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor3);
-		}
+    if (row.sensor3 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor3);
+    }
     terminal_printString(",");
-		if (row.sensor4 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor4);
-		}
+    if (row.sensor4 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor4);
+    }
     terminal_printString(",");
-		if (row.sensor5 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor5);
-		}
+    if (row.sensor5 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor5);
+    }
     terminal_printString(",");
-		if (row.sensor6 > 1500) {
-			terminal_printString("MAX");
-		} else {
-			terminal_printValueDec(row.sensor6);
-		}
+    if (row.sensor6 > 1500) {
+      terminal_printString("MAX");
+    } else {
+      terminal_printValueDec(row.sensor6);
+    }
     terminal_printString("\r\n");
   }
 }

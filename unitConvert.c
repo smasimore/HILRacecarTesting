@@ -11,13 +11,13 @@
 extern uint32_t TimeSliceCycles;
 
 uint32_t ms2slices(uint32_t x){
-	x *= 80000;
-	if((x % TimeSliceCycles) != 0) x += TimeSliceCycles;
-	return (x / TimeSliceCycles);
+  x *= 80000;
+  if((x % TimeSliceCycles) != 0) x += TimeSliceCycles;
+  return (x / TimeSliceCycles);
 }
 
 uint32_t us2slices(uint32_t x){
-	x *= 80;
-	if((x % TimeSliceCycles) != 0) x += TimeSliceCycles;
-	return (x / TimeSliceCycles);
+  x *= 80;
+  if((x % TimeSliceCycles) != 0) x += TimeSliceCycles;
+  return (x / TimeSliceCycles);
 }

@@ -11,9 +11,9 @@
 extern uint32_t priorityOccupied;
 
 uint8_t getHighestPriority(void){
-	uint8_t leading;
-	__asm{
-		CLZ leading, priorityOccupied
-	}
-	return (leading + NUM_PRIORITY_LEVELS) - 32;
+  uint8_t leading;
+  __asm{
+    CLZ leading, priorityOccupied
+  }
+  return (leading + NUM_PRIORITY_LEVELS) - 32;
 }

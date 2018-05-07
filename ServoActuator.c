@@ -37,10 +37,10 @@ void ServoActuator_Init(void) {
  */
 uint16_t ServoActuator_GetDirection(void) {
   uint16_t duty = getDuty();
-	
-	// Log duty value for debugging.
-	LiveData.servoDuty = duty;
-	
+  
+  // Log duty value for debugging.
+  LiveData.servoDuty = duty;
+  
   return getDirectionFromDutyVal(duty);
 }
 
@@ -48,8 +48,8 @@ uint16_t ServoActuator_GetDirection(void) {
  * Gets duty of servo using ADC. Returns 0 - 1000 (res of .1%).
  */
 static uint16_t getDuty(void) {
-	uint16_t adc_val = ADC_In(SERVO_ADC_CHANNEL);
-	
+  uint16_t adc_val = ADC_In(SERVO_ADC_CHANNEL);
+  
   return adc_val * 1000 / 4096;
 }
 
@@ -65,6 +65,6 @@ static uint16_t getDirectionFromDutyVal(uint16_t duty) {
   if (duty >= SERVO_DUTY_L) {
     return SERVO_DEG_L;
   }
-	
-	return SERVO_DEG_M;
+  
+  return SERVO_DEG_M;
 }

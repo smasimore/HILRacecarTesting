@@ -48,26 +48,26 @@ TCB_t TCBs[MAX_THREADS];
 uint32_t ThreadStacks[MAX_THREADS][STACK_SIZE];
 
 void initStack(TCB_t* TCBPt, void (*task)(void)){
-	uint32_t* TCBstackPt;
-	TCBPt->stackPointer = &ThreadStacks[TCBPt->tid][STACK_SIZE];
-	TCBstackPt = TCBPt->stackPointer;
-  *(--TCBstackPt) = 0x01000000;   	// thumb bit
-	*(--TCBstackPt) = (uint32_t)task;	// user task
-  *(--TCBstackPt) = 0x14141414;   	// R14
-  *(--TCBstackPt) = 0x12121212;   	// R12
-  *(--TCBstackPt) = 0x03030303;   	// R3
-  *(--TCBstackPt) = 0x02020202;   	// R2
-  *(--TCBstackPt) = 0x01010101;   	// R1
-  *(--TCBstackPt) = 0x00000000;   	// R0
-  *(--TCBstackPt) = 0x11111111;   	// R11
-  *(--TCBstackPt) = 0x10101010;  		// R10
-  *(--TCBstackPt) = 0x09090909;  		// R9
-  *(--TCBstackPt) = 0x08080808;  		// R8
-  *(--TCBstackPt) = 0x07070707;  		// R7
-  *(--TCBstackPt) = 0x06060606;  		// R6
-  *(--TCBstackPt) = 0x05050505;  		// R5
-  *(--TCBstackPt) = 0x04040404;  		// R4
-	TCBPt->stackPointer -= 16;
+  uint32_t* TCBstackPt;
+  TCBPt->stackPointer = &ThreadStacks[TCBPt->tid][STACK_SIZE];
+  TCBstackPt = TCBPt->stackPointer;
+  *(--TCBstackPt) = 0x01000000;     // thumb bit
+  *(--TCBstackPt) = (uint32_t)task;  // user task
+  *(--TCBstackPt) = 0x14141414;     // R14
+  *(--TCBstackPt) = 0x12121212;     // R12
+  *(--TCBstackPt) = 0x03030303;     // R3
+  *(--TCBstackPt) = 0x02020202;     // R2
+  *(--TCBstackPt) = 0x01010101;     // R1
+  *(--TCBstackPt) = 0x00000000;     // R0
+  *(--TCBstackPt) = 0x11111111;     // R11
+  *(--TCBstackPt) = 0x10101010;      // R10
+  *(--TCBstackPt) = 0x09090909;      // R9
+  *(--TCBstackPt) = 0x08080808;      // R8
+  *(--TCBstackPt) = 0x07070707;      // R7
+  *(--TCBstackPt) = 0x06060606;      // R6
+  *(--TCBstackPt) = 0x05050505;      // R5
+  *(--TCBstackPt) = 0x04040404;      // R4
+  TCBPt->stackPointer -= 16;
 }
 
 /**************OS_Init***************
@@ -77,7 +77,7 @@ Outputs: ErrorCode
 */
 ErrorCode_t OS_Init(void) { 
   int iii;
-	PLL_Init(Bus80MHz);
+  PLL_Init(Bus80MHz);
   // loop through threads and create I ll
   TCBs[0].prevTCB = &TCBs[MAX_THREADS-1];
   for(iii = 0; iii < MAX_THREADS; iii++){
@@ -106,23 +106,23 @@ ErrorCode_t OS_Init(void) {
 
   InactiveThreads = &TCBs[0];
   terminal_printMessage("Initialization successful!", 0);
-	
-	initSystemClockTimer();
-	
+  
+  initSystemClockTimer();
+  
   return E_SUCCESS;
 }
 
 void initSystemClockTimer(void) {
-	volatile int delay;
-	
-	SYSCTL_RCGCWTIMER_R |= 0x01;
-	delay = 42;
-	WTIMER0_CTL_R &= ~TIMER_CTL_TAEN;
-	WTIMER0_CFG_R = 0x00;
-	WTIMER0_TAILR_R = 0xFFFFFFFF;
-	WTIMER0_TBILR_R = 0xFFFFFFFF;
-	WTIMER0_TAMR_R |= (TIMER_TAMR_TACDIR | TIMER_TAMR_TAMR_1_SHOT);
-	WTIMER0_CTL_R |= TIMER_CTL_TAEN;
+  volatile int delay;
+  
+  SYSCTL_RCGCWTIMER_R |= 0x01;
+  delay = 42;
+  WTIMER0_CTL_R &= ~TIMER_CTL_TAEN;
+  WTIMER0_CFG_R = 0x00;
+  WTIMER0_TAILR_R = 0xFFFFFFFF;
+  WTIMER0_TBILR_R = 0xFFFFFFFF;
+  WTIMER0_TAMR_R |= (TIMER_TAMR_TACDIR | TIMER_TAMR_TAMR_1_SHOT);
+  WTIMER0_CTL_R |= TIMER_CTL_TAEN;
 }
 
 /**************OS_AddThread***************
@@ -133,7 +133,7 @@ Outputs: 1 if successful
 unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned long priority) {
   TCB_t* newTCB;
   uint8_t newTID, prevTID, nextTID;
-	uint32_t oldIntrState;
+  uint32_t oldIntrState;
   terminal_printMessage("Adding new thread", 0);
   // There is the possibility of a critical section if two threads are being created or destroyed at the same time.
   oldIntrState = StartCritical();
@@ -143,14 +143,14 @@ unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned
   }
   
   newTCB = InactiveThreads;
-	if(InactiveThreads != InactiveThreads->nextTCB){
-		InactiveThreads->nextTCB->prevTCB = InactiveThreads->prevTCB;
-		InactiveThreads->prevTCB->nextTCB = InactiveThreads->nextTCB;
-		InactiveThreads = InactiveThreads->nextTCB;
-	}
-	else{
-		InactiveThreads = 0;
-	}
+  if(InactiveThreads != InactiveThreads->nextTCB){
+    InactiveThreads->nextTCB->prevTCB = InactiveThreads->prevTCB;
+    InactiveThreads->prevTCB->nextTCB = InactiveThreads->nextTCB;
+    InactiveThreads = InactiveThreads->nextTCB;
+  }
+  else{
+    InactiveThreads = 0;
+  }
   
   EndCritical(oldIntrState);
   
@@ -160,7 +160,7 @@ unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned
   oldIntrState = StartCritical();
   if (ReadyThreads[priority] == 0){
     ReadyThreads[priority] = newTCB;
-		priorityOccupied |= 1 << (NUM_PRIORITY_LEVELS - priority - 1);
+    priorityOccupied |= 1 << (NUM_PRIORITY_LEVELS - priority - 1);
     newTCB->prevTCB = newTCB;
     newTCB->nextTCB = newTCB;
   }
@@ -175,7 +175,7 @@ unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned
   prevTID = newTCB->prevTCB->tid;
   nextTID = newTCB->nextTCB->tid;
   EndCritical(oldIntrState);
-	
+  
   if (InactiveThreads == 0){
     terminal_printMessage("No remaining inactive threads", 1);
   }
@@ -185,8 +185,8 @@ unsigned long OS_AddThread(void (*task)(void), unsigned long stackSize, unsigned
   terminal_printValue(prevTID);
   terminal_printMessage("Next thread has TID ", 0);
   terminal_printValue(nextTID);
-	
-	return 1;
+  
+  return 1;
 }
 
 /**************OS_AddPeriodicThread***************
@@ -203,30 +203,30 @@ ErrorCode_t OS_AddPeriodicThread(void (*task)(void), unsigned long period,
     return E_INVALID_PRIORITY;
   }
   
-	SYSCTL_RCGCTIMER_R |= 0x20; // Activate timer5
-	PeriodicTask = task;
-	TIMER5_CTL_R = 0; // Disable during setup
-	TIMER5_CFG_R = 0; // Configure for 32-bit timer mode (uses A and B)
-	TIMER5_TAMR_R = 0x2; // Configure for periodic mode, default down-count settings
-	TIMER5_TAILR_R = period; // Configure for periodic mode, default down-count settings
-	TIMER5_TAPR_R = 0; // Prescale value for trigger
-	TIMER5_IMR_R = 1; // Arm interrupt
-	NVIC_EN2_R |= 1<<28; // Enable interrupt 92 in NVIC
-	NVIC_PRI25_R = (NVIC_PRI25_R&(~0xF0)) | (priority << 5); // Set priority
-	TIMER5_ICR_R = 0x1; // Clear flag
-	
-	Period = period;
-	
-	if (OSLaunched) {
-		TIMER5_CTL_R = 0x1; // Enable timer
-	}
+  SYSCTL_RCGCTIMER_R |= 0x20; // Activate timer5
+  PeriodicTask = task;
+  TIMER5_CTL_R = 0; // Disable during setup
+  TIMER5_CFG_R = 0; // Configure for 32-bit timer mode (uses A and B)
+  TIMER5_TAMR_R = 0x2; // Configure for periodic mode, default down-count settings
+  TIMER5_TAILR_R = period; // Configure for periodic mode, default down-count settings
+  TIMER5_TAPR_R = 0; // Prescale value for trigger
+  TIMER5_IMR_R = 1; // Arm interrupt
+  NVIC_EN2_R |= 1<<28; // Enable interrupt 92 in NVIC
+  NVIC_PRI25_R = (NVIC_PRI25_R&(~0xF0)) | (priority << 5); // Set priority
+  TIMER5_ICR_R = 0x1; // Clear flag
+  
+  Period = period;
+  
+  if (OSLaunched) {
+    TIMER5_CTL_R = 0x1; // Enable timer
+  }
   
   return E_SUCCESS;
 }
-																 
+                                 
 ErrorCode_t OS_RemovePeriodicThread(void) {
-	TIMER5_CTL_R = 0;
-	return E_SUCCESS;
+  TIMER5_CTL_R = 0;
+  return E_SUCCESS;
 }
 
 /**************OS_Disable***************
@@ -244,7 +244,7 @@ Inputs: none
 Outputs: none
 */
 void Timer5A_Handler(void) {
-	TIMER5_ICR_R = 0x1; // Acknowledge
+  TIMER5_ICR_R = 0x1; // Acknowledge
   (*PeriodicTask)(); // Execute user task
 }
 
@@ -263,10 +263,10 @@ unsigned long OS_Id(void) {
 // You are free to select the time resolution for this function
 // OS_Sleep(0) implements cooperative multitasking
 void OS_Sleep(unsigned long sleepTime) {
-	uint32_t slicesToSleep = ms2slices(sleepTime);
-	__asm{
-		SVC #2, {r0=slicesToSleep}
-	}
+  uint32_t slicesToSleep = ms2slices(sleepTime);
+  __asm{
+    SVC #2, {r0=slicesToSleep}
+  }
 } 
 
 // ******** OS_Kill ************
@@ -274,10 +274,10 @@ void OS_Sleep(unsigned long sleepTime) {
 // input:  none
 // output: none
 void OS_Kill(void) {
-	TCB_t** LL_Pt = &InactiveThreads;
-	__asm{
-		SVC #1, {r0=LL_Pt}
-	}
+  TCB_t** LL_Pt = &InactiveThreads;
+  __asm{
+    SVC #1, {r0=LL_Pt}
+  }
 }
 
 // ******** OS_Suspend ************
@@ -288,9 +288,9 @@ void OS_Kill(void) {
 // input:  none
 // output: none
 void OS_Suspend(void) {
-	__asm {
-		SVC #0
-	}
+  __asm {
+    SVC #0
+  }
 }
 
 
@@ -302,18 +302,18 @@ void OS_Suspend(void) {
 // It is ok to change the resolution and precision of this function as long as 
 //   this function and OS_TimeDifference have the same resolution and precision 
 uint64_t OS_Time(void) {
-	uint32_t lowBits, highBits;
-	uint64_t currentTime;
-	highBits = WTIMER0_TBR_R;
-	lowBits = WTIMER0_TAR_R;
-	if (highBits != WTIMER0_TBR_R) {
-		highBits = WTIMER0_TBR_R;
-		lowBits = WTIMER0_TAR_R;
-	}
-	currentTime = highBits;
-	currentTime <<= 32;
-	currentTime += lowBits;
-	return currentTime;
+  uint32_t lowBits, highBits;
+  uint64_t currentTime;
+  highBits = WTIMER0_TBR_R;
+  lowBits = WTIMER0_TAR_R;
+  if (highBits != WTIMER0_TBR_R) {
+    highBits = WTIMER0_TBR_R;
+    lowBits = WTIMER0_TAR_R;
+  }
+  currentTime = highBits;
+  currentTime <<= 32;
+  currentTime += lowBits;
+  return currentTime;
 }
 
 // ******** OS_TimeDifference ************
@@ -346,24 +346,24 @@ unsigned long OS_MsTime(void) {
 // In Lab 3, you should implement the user-defined TimeSlice field
 // It is ok to limit the range of theTimeSlice to match the 24-bit SysTick
 void OS_Launch(unsigned long theTimeSlice) {
-	if (theTimeSlice > 0x00FFFFFF){
-		terminal_fatalErrorHandler(E_INVALID_TIME_SLICE, "Time slice out of bounds");
-	}
-	if (theTimeSlice < 8000){
-		terminal_printMessage("Time slice size less than 100 us", 2);
-	}
-	TimeSliceCycles = theTimeSlice;
-	NVIC_ST_CTRL_R = 0;
-	NVIC_ST_RELOAD_R = theTimeSlice;
-	NVIC_ST_CURRENT_R = 0;
-	NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x1FFFFFFF) | 0xE0000000;	// SysTick Priority 7
-	NVIC_SYS_PRI2_R = (NVIC_SYS_PRI2_R&0x1FFFFFFF) | 0xC0000000;	// SVC Priority 6
-	
-	if (Period) {
-		TIMER5_CTL_R = 0x1; // Enable timer
-	}
+  if (theTimeSlice > 0x00FFFFFF){
+    terminal_fatalErrorHandler(E_INVALID_TIME_SLICE, "Time slice out of bounds");
+  }
+  if (theTimeSlice < 8000){
+    terminal_printMessage("Time slice size less than 100 us", 2);
+  }
+  TimeSliceCycles = theTimeSlice;
+  NVIC_ST_CTRL_R = 0;
+  NVIC_ST_RELOAD_R = theTimeSlice;
+  NVIC_ST_CURRENT_R = 0;
+  NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x1FFFFFFF) | 0xE0000000;  // SysTick Priority 7
+  NVIC_SYS_PRI2_R = (NVIC_SYS_PRI2_R&0x1FFFFFFF) | 0xC0000000;  // SVC Priority 6
+  
+  if (Period) {
+    TIMER5_CTL_R = 0x1; // Enable timer
+  }
 
-	OSLaunched = 1;
-	
-	StartOS();
+  OSLaunched = 1;
+  
+  StartOS();
 }

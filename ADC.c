@@ -53,8 +53,8 @@ Inputs:
 Outputs: ADC value
 */
 uint16_t ADC_In(uint8_t channel) { 
-	uint16_t val;
-	
+  uint16_t val;
+  
   // Init SW trigger.
   ADC1_EMUX_R &= ~0xF000; // Set Seq3 as software trigger
   ADC1_SSMUX3_R = channel; // Set channel
